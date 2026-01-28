@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Hairstyles Gallery</title>
+<style>
+  /* Page styling */
+  body {
+    margin: 0;
+    font-family: "Segoe UI", sans-serif;
+    background: linear-gradient(135deg, #2b244a, #4b3f72);
+    color: white;
+    min-height: 100vh;
+    overflow-y: auto;
+    padding-bottom: 50px;
+  }
+
+  h1 {
+    text-align: center;
+    color: #da79da; /* girly purple */
+    margin: 20px 0;
+    text-shadow: 1px 1px 2px #fff;
+  }
+
+  /* Back button */
+  .back-btn {
+    display: inline-block;
+    margin: 0 auto 20px auto;
+    padding: 10px 20px;
+    background-color: #a64ca6;
+    color: white;
+    font-weight: bold;
+    border-radius: 10px;
+    text-decoration: none;
+    transition: background-color 0.2s;
+  }
+  .back-btn:hover {
+    background-color: #c77fcf;
+  }
+
+  /* Search bar */
+  #hairstyle-search {
+    display: block;
+    margin: 0 auto 30px auto;
+    width: 300px;
+    padding: 10px;
+    font-size: 14px;
+    border-radius: 10px;
+    border: 2px solid #e672f3;
+    background-color: #fff;
+    color: #4a2f5e;
+    text-align: center;
+    box-shadow: 0 0 5px rgba(167,76,166,0.5);
+  }
+
+  #hairstyle-search:focus {
+    outline: none;
+    border-color: #a64ca6;
+    box-shadow: 0 0 10px rgba(166,76,166,0.5);
+  }
+
+  /* Gallery container */
+  #hairstyles-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 18px;
+    padding: 0 20px;
+  }
+
+  /* Card styling */
+  .hairstyle-card {
+    background-color: #e6b1d8; /* soft pink inside cards */
+    border: 2px solid #c77fcf; /* purple border */
+    border-radius: 15px;
+    padding: 10px;
+    box-sizing: border-box;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    transition: transform 0.2s, box-shadow 0.2s, background-color 0.2s;
+    cursor: pointer;
+  }
+
+  .hairstyle-card img {
+    width: 100%;
+    height: 130px;
+    object-fit: cover;
+    border-radius: 10px;
+    border: 1px solid #c77fcf;
+  }
+
+  .hairstyle-card h3 {
+    font-size: 16px;
+    margin: 5px 0;
+    color: #4a2f5e;
+  }
+
+  .hairstyle-card a.tutorial-link {
+    font-size: 13px;
+    color: #a64ca6; /* bright purple link */
+    font-weight: bold;
+    text-decoration: underline;
+  }
+
+  .hairstyle-card:hover {
+    transform: scale(1.05);
+    box-shadow: 0 8px 15px rgba(166,76,166,0.3);
+    background-color: #ffd6f2; /* lighter pink hover */
+  }
+</style>
+</head>
+<body>
+
+<h1>Hairstyle Gallery</h1>
+
+<div style="text-align:center;">
+  <a href="box.html" class="back-btn">← Back</a>
+</div>
+
+<!-- Search bar -->
+<input type="text" id="hairstyle-search" placeholder="Search hairstyles...">
+
+<!-- Gallery container -->
+<div id="hairstyles-container"></div>
+
+<script>
+const hairstyles = [
+
+ { name: "French Braid", img: "1.jpg", link: "https://www.youtube.com/watch?v=Jm-oDNwmef8" },
+  { name: "Dutch Braid", img: "2.jpg", link: "https://www.youtube.com/results?search_query=dutch+braid+tutorial" },
+  { name: "Fishtail Braid", img: "3.jpg", link: "https://www.youtube.com/watch?v=hV5b8BHS6kw&t=509s" },
+  { name: "Box Braids", img: "4.jpg", link: "https://www.youtube.com/playlist?list=PL-APfdBbtYQIIBcNpVZUfX5w7syiPKVrG" },
+  { name: "Crown Braid", img: "5.jpg", link: "https://www.youtube.com/results?search_query=halo+crown+braid+tutorial" },
+  { name: "Milkmaid Braid", img: "6.jpg", link: "https://www.youtube.com/results?search_query=milkmaid+braid+tutorial" },
+  { name: "Waterfall Braid", img: "7.jpg", link: "https://www.youtube.com/watch?v=hV5b8BHS6kw&t=409s" },
+  { name: "Halo Braid", img: "8.jpg", link: "https://www.youtube.com/results?search_query=halo+braid+tutorial" },
+  { name: "Goddess Braid", img: "9.jpg", link: "https://www.youtube.com/results?search_query=goddess+braid+tutorial" },
+  { name: "Viking Braid", img: "10.jpg", link: "https://www.youtube.com/results?search_query=viking+braid+tutorial" },
+  { name: "Pull-Through Braid", img: "11.jpg", link: "https://www.youtube.com/watch?v=YSLkKgzSZhA" },
+  { name: "Lace Braid", img: "12.jpg", link: "https://www.youtube.com/watch?v=hV5b8BHS6kw&t=345s" },
+  { name: "Infinity Braid", img: "13.jpg", link: "https://www.youtube.com/results?search_query=infinity+braid+tutorial" },
+  { name: "Mermaid Braid", img: "14.jpg", link: "https://www.youtube.com/results?search_query=mermaid+braid+tutorial" },
+  { name: "Rope Braid", img: "15.jpg", link: "https://www.youtube.com/watch?v=hV5b8BHS6kw&t=112s" },
+  { name: "Twist Braid", img: "16.jpg", link: "https://www.youtube.com/results?search_query=twist+braid+tutorial" },
+  { name: "Cornrow Braid", img: "17.jpg", link: "https://www.youtube.com/watch?v=AOSkWaaiYaY" },
+  { name: "Bubble Braid", img: "18.jpg", link: "https://www.youtube.com/results?search_query=bubble+braid+tutorial" },
+  { name: "Ladder Braid", img: "19.jpg", link: "https://www.youtube.com/results?search_query=ladder+braid+tutorial" },
+  { name: "Chain Braid", img: "20.jpg", link: "https://www.youtube.com/results?search_query=chain+braid+tutorial" },
+  { name: "Double Braid", img: "21.jpg", link: "https://www.youtube.com/results?search_query=double+braids+tutorial" },
+  { name: "Triple Braid", img: "22.jpg", link: "https://www.youtube.com/results?search_query=triple+braid+tutorial" },
+  { name: "Side Braid", img: "23.jpg", link: "https://www.youtube.com/results?search_query=side+braid+tutorial" },
+  { name: "Front Braid", img: "24.jpg", link: "https://www.youtube.com/results?search_query=front+braid+tutorial" },
+  { name: "Diagonal Braid", img: "25.jpg", link: "https://www.youtube.com/results?search_query=diagonal+braid+tutorial" },
+  { name: "Zigzag Braid", img: "26.jpg", link: "https://www.youtube.com/results?search_query=zigzag+braid+tutorial" },
+  { name: "Reverse Braid", img: "27.jpg", link: "https://www.youtube.com/results?search_query=reverse+braid+tutorial" },
+  { name: "Fishtail Crown", img: "28.jpg", link: "https://www.youtube.com/results?search_query=fishtail+crown+braid+tutorial" },
+  { name: "Lattice Braid", img: "29.jpg", link: "https://www.youtube.com/results?search_query=lattice+braid+tutorial" },
+  { name: "Checkerboard Braid", img: "30.jpg", link: "https://www.youtube.com/results?search_query=checkerboard+braid+tutorial" },
+  { name: "Side French", img: "31.jpg", link: "https://www.youtube.com/results?search_query=side+french+braid+tutorial" },
+  { name: "Side Dutch", img: "32.jpg", link: "https://www.youtube.com/results?search_query=side+dutch+braid+tutorial" },
+  { name: "Crown Twist", img: "33.jpg", link: "https://www.youtube.com/results?search_query=crown+twist+braid+tutorial" },
+  { name: "Double Fishtail", img: "34.jpg", link: "https://www.youtube.com/results?search_query=double+fishtail+braid+tutorial" },
+  { name: "Braided Pony Wrap", img: "35.jpg", link: "https://www.youtube.com/results?search_query=braided+pony+wrap+tutorial" },
+  { name: "French Rope", img: "36.jpg", link: "https://www.youtube.com/results?search_query=french+rope+braid+tutorial" },
+  { name: "Herringbone", img: "37.jpg", link: "https://www.youtube.com/results?search_query=herringbone+braid+tutorial" },
+  { name: "Braided Bun", img: "38.jpg", link: "https://www.youtube.com/results?search_query=braided+bun+tutorial" },
+  { name: "Braided Low Ponytail", img: "39.jpg", link: "https://www.youtube.com/results?search_query=braided+low+ponytail+tutorial" },
+  { name: "Braided Top Knot", img: "40.jpg", link: "https://www.youtube.com/results?search_query=braided+top+knot+tutorial" },
+  { name: "Halo Twist", img: "41.jpg", link: "https://www.youtube.com/results?search_query=halo+twist+braid+tutorial" },
+  { name: "Boho Braid", img: "42.jpg", link: "https://www.youtube.com/results?search_query=boho+braid+tutorial" },
+  { name: "Braided Bob", img: "43.jpg", link: "https://www.youtube.com/results?search_query=braided+bob+tutorial" },
+  { name: "French Twist Braid", img: "44.jpg", link: "https://www.youtube.com/results?search_query=french+twist+braid+tutorial" },
+  { name: "Rope Halo", img: "45.jpg", link: "https://www.youtube.com/results?search_query=rope+halo+braid+tutorial" },
+  { name: "Waterfall Twist", img: "46.jpg", link: "https://www.youtube.com/results?search_query=waterfall+twist+braid+tutorial" },
+  { name: "Infinity Twist", img: "47.jpg", link: "https://www.youtube.com/results?search_query=infinity+twist+braid+tutorial" },
+  { name: "Double Rope", img: "48.jpg", link: "https://www.youtube.com/results?search_query=double+rope+braid+tutorial" },
+  { name: "Twisted Milkmaid", img: "49.jpg", link: "https://www.youtube.com/results?search_query=twisted+milkmaid+braid+tutorial" },
+  { name: "Braided Mohawk", img: "50.jpg", link: "https://www.youtube.com/results?search_query=braided+mohawk+tutorial" },
+  { name: "Side Bubble Braid", img: "51.jpg", link: "https://www.youtube.com/results?search_query=side+bubble+braid+tutorial" },
+  { name: "Goddess Twist", img: "52.jpg", link: "https://www.youtube.com/results?search_query=goddess+twist+braid+tutorial" },
+  { name: "Braided Side Pony", img: "53.jpg", link: "https://www.youtube.com/results?search_query=braided+side+pony+tutorial" },
+  { name: "Braided Updo", img: "54.jpg", link: "https://www.youtube.com/results?search_query=braided+updo+tutorial" },
+  { name: "Mermaid Twist", img: "55.jpg", link: "https://www.youtube.com/results?search_query=mermaid+twist+braid+tutorial" },
+  { name: "Crown Fishtail", img: "56.jpg", link: "https://www.youtube.com/results?search_query=crown+fishtail+braid+tutorial" },
+  { name: "Lace Crown", img: "57.jpg", link: "https://www.youtube.com/results?search_query=lace+crown+braid+tutorial" },
+  { name: "Mini Braids", img: "58.jpg", link: "https://www.youtube.com/playlist?list=PL-APfdBbtYQIIBcNpVZUfX5w7syiPKVrG" },
+  { name: "Braided Bun Crown", img: "59.jpg", link: "https://www.youtube.com/results?search_query=braided+bun+crown+tutorial" },
+  { name: "High Sleek Ponytail", img: "160.jpg", link: "https://www.youtube.com/watch?v=zmigm-ugzqg" },
+  { name: "Low Romantic Ponytail", img: "161.jpg", link: "https://www.youtube.com/watch?v=k7uXBFxbpq8" },
+  { name: "Bubble Ponytail", img: "162.jpg", link: "https://www.youtube.com/watch?v=EBfMBYvTD8E" },
+  { name: "Side Ponytail", img: "163.jpg", link: "https://www.youtube.com/results?search_query=side+ponytail+hairstyle+tutorial" },
+  { name: "Wrapped Ponytail", img: "164.jpg.jpg", link: "https://www.youtube.com/results?search_query=wrapped+ponytail+tutorial" },
+  { name: "Braided Ponytail", img: "165.jpg.jpg", link: "https://www.youtube.com/watch?v=ldYvtp8jMxw" },
+  { name: "Voluminous Ponytail", img: "166.jpg.jpg", link: "https://www.youtube.com/watch?v=ToATXiitWOY" },
+  { name: "Curly Ponytail", img: "167.jpg", link: "https://www.youtube.com/results?search_query=curly+ponytail+tutorial" },
+  { name: "Twisted Ponytail", img: "168.jpg", link: "https://www.youtube.com/results?search_query=twisted+ponytail+tutorial" },
+  { name: "Top Knot Ponytail", img: "169.jpg", link: "https://www.youtube.com/results?search_query=top+knot+ponytail+tutorial" },
+  { name: "Side Swept Pony", img: "170,jpg.webp", link: "https://www.youtube.com/results?search_query=side+swept+ponytail+tutorial" },
+  { name: "Double Ponytail", img: "171.jpg", link: "https://www.youtube.com/watch?v=qdMw9XIfXaY" },
+  { name: "Fishtail Ponytail", img: "172.jpg", link: "https://www.youtube.com/results?search_query=fishtail+ponytail+tutorial" },
+  { name: "French Braid Pony", img: "173.jpg", link: "https://www.youtube.com/results?search_query=french+braid+ponytail+tutorial" },
+  { name: "Dutch Braid Pony", img: "174.jpg", link: "https://www.youtube.com/results?search_query=dutch+braid+ponytail+tutorial" },
+  { name: "High Wrap Pony", img: "175.jpg", link: "https://www.youtube.com/results?search_query=high+wrap+ponytail+tutorial" },
+  { name: "Low Side Pony", img: "176.jpg", link: "https://www.youtube.com/results?search_query=low+side+ponytail+tutorial" },
+  { name: "Bubble Wrap Pony", img: "177.jpg", link: "https://www.youtube.com/results?search_query=bubble+wrap+ponytail+tutorial" },
+  { name: "Braided Low Pony", img: "178.jpg", link: "https://www.youtube.com/results?search_query=braided+low+ponytail+tutorial" },
+  { name: "Half-Up Pony", img: "179.jpg", link: "https://www.youtube.com/results?search_query=half+up+ponytail+tutorial" },
+  { name: "Defined Ringlets", img: "60.jpg", link: "https://www.youtube.com/results?search_query=defined+ringlets+tutorial" },
+  { name: "Soft Beach Curls", img: "61.jpg", link: "https://www.youtube.com/results?search_query=soft+beach+curls+tutorial" },
+  { name: "Curly Bob", img: "62.jpg", link: "https://www.youtube.com/results?search_query=curly+bob+tutorial" },
+  { name: "Voluminous Curls", img: "63.jpg", link: "https://www.youtube.com/results?search_query=voluminous+curls+tutorial" },
+  { name: "Finger Coils", img: "64.jpg", link: "https://www.youtube.com/watch?v=rfHVYqHVo0o" },
+  { name: "Wash and Go", img: "65.jpg", link: "https://www.youtube.com/results?search_query=wash+and+go+curly+hair+tutorial" },
+  { name: "Loose Curls", img: "66.jpg", link: "https://www.youtube.com/results?search_query=loose+curls+tutorial" },
+  { name: "Tight Curls", img: "67.jpg", link: "https://www.youtube.com/results?search_query=tight+curls+tutorial" },
+  { name: "Spiral Curls", img: "68.jpg", link: "https://www.youtube.com/results?search_query=spiral+curls+tutorial" },
+  { name: "Curly Ponytail", img: "69.jpg", link: "https://www.youtube.com/results?search_query=curly+ponytail+tutorial" },
+  { name: "Curly Half-Up", img: "70.jpg", link: "https://www.youtube.com/results?search_query=curly+half+up+hairstyle+tutorial" },
+  { name: "Curly Top Knot", img: "71.jpg", link: "https://www.youtube.com/results?search_query=curly+top+knot+tutorial" },
+  { name: "Messy Curls", img: "72.jpg", link: "https://www.youtube.com/results?search_query=messy+curls+tutorial" },
+  { name: "Side Swept Curls", img: "73.jpg", link: "https://www.youtube.com/results?search_query=side+swept+curls+tutorial" },
+  { name: "Boho Curls", img: "74.jpg", link: "https://www.youtube.com/results?search_query=boho+curls+tutorial" },
+  { name: "Curly Bob with Bangs", img: "75.jpg", link: "https://www.youtube.com/results?search_query=curly+bob+with+bangs+tutorial" },
+  { name: "Layered Curls", img: "76.jpg", link: "https://www.youtube.com/results?search_query=layered+curls+tutorial" },
+  { name: "Curly Mohawk", img: "77.jpg", link: "https://www.youtube.com/results?search_query=curly+mohawk+tutorial" },
+  { name: "Twist Out", img: "78.jpg", link: "https://www.youtube.com/watch?v=7_q3apmDRp4" },
+  { name: "Bantu Knots", img: "79.jpg", link: "https://www.youtube.com/watch?v=2Zs_1v7HgD8" },
+  { name: "Halo Curls", img: "80.jpg", link: "https://www.youtube.com/results?search_query=halo+curls+tutorial" },
+  { name: "Frohawk", img: "81.jpg", link: "https://www.youtube.com/results?search_query=frohawk+tutorial" },
+  { name: "Curly Bob Low Pony", img: "82.jpg", link: "https://www.youtube.com/results?search_query=curly+bob+low+ponytail+tutorial" },
+  { name: "Bubble Curls", img: "83.jpg", link: "https://www.youtube.com/results?search_query=bubble+curls+tutorial" },
+  { name: "French Curly Twist", img: "84.jpg", link: "https://www.youtube.com/results?search_query=french+twist+curly+hairstyle+tutorial" },
+  { name: "Side Curly Twist", img: "85.jpg", link: "https://www.youtube.com/results?search_query=side+curly+twist+tutorial" },
+  { name: "Infinity Curls", img: "86.jpg", link: "https://www.youtube.com/results?search_query=infinity+curls+tutorial" },
+  { name: "Double Twist Out", img: "87.jpg", link: "https://www.youtube.com/results?search_query=double+twist+out+curly+hair+tutorial" },
+  { name: "Curly Space Buns", img: "88.jpg", link: "https://www.youtube.com/results?search_query=curly+space+buns+tutorial" },
+  { name: "Top Knot Curls", img: "89.jpg", link: "https://www.youtube.com/results?search_query=top+knot+curls+tutorial" },
+  { name: "Low Bun Curls", img: "90.jpg", link: "https://www.youtube.com/results?search_query=low+bun+curls+tutorial" },
+  { name: "Curly Fishtail", img: "91.jpg", link: "https://www.youtube.com/results?search_query=curly+fishtail+braid+tutorial" },
+  { name: "Side Rope Curls", img: "92.jpg", link: "https://www.youtube.com/results?search_query=side+rope+curls+tutorial" },
+  { name: "Mini Twists", img: "93.jpg", link: "https://www.youtube.com/results?search_query=mini+twists+tutorial" },
+  { name: "Curly Pony Wrap", img: "94.jpg", link: "https://www.youtube.com/results?search_query=curly+ponytail+wrap+tutorial" },
+  { name: "Side Bubble Curls", img: "95.jpg", link: "https://www.youtube.com/results?search_query=side+bubble+curls+tutorial" },
+  { name: "Twist Out Half-Up", img: "96.jpg", link: "https://www.youtube.com/results?search_query=twist+out+half+up+tutorial" },
+  { name: "French Twist Out", img: "97.jpg", link: "https://www.youtube.com/results?search_query=french+twist+out+curly+hair+tutorial" },
+  { name: "Halo Twist Out", img: "98.jpg", link: "https://www.youtube.com/results?search_query=halo+twist+out+tutorial" },
+  { name: "Pixie Cut", img: "180.jpg", link: "https://www.youtube.com/results?search_query=pixie+cut+hairstyle+tutorial" },
+  { name: "Textured Crop", img: "181.jpg", link: "https://www.youtube.com/results?search_query=textured+crop+hairstyle+tutorial" },
+  { name: "French Bob", img: "182.jpg", link: "https://www.youtube.com/results?search_query=french+bob+haircut+tutorial" },
+  { name: "Buzz Cut", img: "183.jpg", link: "https://www.youtube.com/results?search_query=buzz+cut+tutorial" },
+  { name: "Layered Short Cut", img: "184.jpg", link: "https://www.youtube.com/results?search_query=layered+short+hair+tutorial" },
+  { name: "Asymmetrical Bob", img: "185.jpg", link: "https://www.youtube.com/results?search_query=asymmetrical+bob+haircut+tutorial" },
+  { name: "Short Curly Bob", img: "186.jpg", link: "https://www.youtube.com/results?search_query=short+curly+bob+tutorial" },
+  { name: "Side Swept Pixie", img: "187.jpg", link: "https://www.youtube.com/results?search_query=side+swept+pixie+tutorial" },
+  { name: "Mini Bob", img: "188.jpg", link: "https://www.youtube.com/results?search_query=mini+bob+haircut+tutorial" },
+  { name: "Messy Pixie", img: "189.jpg", link: "https://www.youtube.com/results?search_query=messy+pixie+hairstyle+tutorial" },
+  { name: "Short Undercut", img: "190.jpg", link: "https://www.youtube.com/results?search_query=short+undercut+haircut+tutorial" },
+  { name: "Stacked Bob", img: "191.jpg", link: "https://www.youtube.com/results?search_query=stacked+bob+haircut+tutorial" },
+  { name: "Mini Pixie", img: "192.jpg", link: "https://www.youtube.com/results?search_query=mini+pixie+haircut+tutorial" },
+  { name: "Curly Crop", img: "193.jpg", link: "https://www.youtube.com/results?search_query=curly+crop+haircut+tutorial" },
+  { name: "Short Layered Bob", img: "194.jpg", link: "https://www.youtube.com/results?search_query=short+layered+bob+haircut+tutorial" },
+  { name: "Short Afro", img: "195.webp", link: "https://www.youtube.com/results?search_query=short+afro+hairstyle+tutorial" },
+  { name: "Messy Bun", img: "129.jpg", link: "https://www.youtube.com/watch?v=BlVLjVNdDqk" },
+  { name: "Low Chignon", img: "130.jpg", link: "https://www.youtube.com/results?search_query=low+chignon+hairstyle+tutorial" },
+  { name: "Top Knot", img: "131.jpg", link: "https://www.youtube.com/results?search_query=top+knot+hairstyle+tutorial" },
+  { name: "Ballerina Bun", img: "132.jpg", link: "https://www.youtube.com/results?search_query=ballerina+bun+tutorial" },
+  { name: "Braided Bun", img: "133.jpg", link: "https://www.youtube.com/results?search_query=braided+bun+tutorial" },
+  { name: "Twisted Bun", img: "134.jpg", link: "https://www.youtube.com/results?search_query=twisted+bun+tutorial" },
+  { name: "Knotted Bun", img: "135.jpg", link: "https://www.youtube.com/results?search_query=knotted+bun+hairstyle+tutorial" },
+  { name: "High Bun", img: "136.jpg", link: "https://www.youtube.com/results?search_query=high+bun+tutorial" },
+  { name: "Half-Up Bun", img: "137.jpg", link: "https://www.youtube.com/results?search_query=half+up+bun+tutorial" },
+  { name: "Side Bun", img: "138.jpg", link: "https://www.youtube.com/results?search_query=side+bun+tutorial" },
+  { name: "Double Bun", img: "139.jpg", link: "https://www.youtube.com/results?search_query=double+bun+tutorial" },
+  { name: "Braided Top Knot", img: "140.jpg", link: "https://www.youtube.com/results?search_query=braided+top+knot+tutorial" },
+  { name: "Low Messy Bun", img: "141.jpg", link: "https://www.youtube.com/results?search_query=low+messy+bun+tutorial" },
+  { name: "Crown Bun", img: "142.jpg", link: "https://www.youtube.com/results?search_query=crown+bun+tutorial" },
+  { name: "Bubble Bun", img: "143.jpg", link: "https://www.youtube.com/results?search_query=bubble+bun+tutorial" },
+  { name: "French Twist Bun", img: "144.jpg", link: "https://www.youtube.com/results?search_query=french+twist+bun+tutorial" },
+  { name: "Dutch Twist Bun", img: "145.jpg", link: "https://www.youtube.com/results?search_query=dutch+twist+bun+tutorial" },
+  { name: "Infinity Bun", img: "146.jpg", link: "https://www.youtube.com/results?search_query=infinity+bun+tutorial" },
+  { name: "Boho Bun", img: "147.jpg", link: "https://www.youtube.com/results?search_query=boho+bun+tutorial" },
+  { name: "Goddess Bun", img: "148.jpg", link: "https://www.youtube.com/results?search_query=goddess+bun+tutorial" },
+  { name: "Mini Bun", img: "149.jpg", link: "https://www.youtube.com/results?search_query=mini+bun+tutorial" },
+  { name: "Curly Bun", img: "150.jpg", link: "https://www.youtube.com/results?search_query=curly+bun+tutorial" },
+  { name: "Side Swept Bun", img: "151.jpg", link: "https://www.youtube.com/results?search_query=side+swept+bun+tutorial" },
+  { name: "Twist Bun", img: "152.jpg", link: "https://www.youtube.com/results?search_query=twist+bun+tutorial" },
+  { name: "Fishtail Bun", img: "153.jpg", link: "https://www.youtube.com/results?search_query=fishtail+bun+tutorial" },
+  { name: "Rope Bun", img: "154.jpg", link: "https://www.youtube.com/results?search_query=rope+bun+tutorial" },
+  { name: "Double Top Knot", img: "155.jpg", link: "https://www.youtube.com/results?search_query=double+top+knot+tutorial" },
+  { name: "Side Bubble Bun", img: "156.jpg", link: "https://www.youtube.com/results?search_query=side+bubble+bun+tutorial" },
+  { name: "Half-Braided Bun", img: "157.jpg", link: "https://www.youtube.com/results?search_query=half+braided+bun+tutorial" },
+  { name: "Halo Bun", img: "158.jpg", link: "https://www.youtube.com/results?search_query=halo+bun+tutorial" },
+  { name: "Top Bubble Bun", img: "159.jpg", link: "https://www.youtube.com/results?search_query=top+bubble+bun+tutorial" },
+   { name: "Hollywood Waves", img: "99.jpg", link: "https://www.youtube.com/results?search_query=hollywood+waves+hairstyle+tutorial" },
+  { name: "Straight Silk Press", img: "100.jpg", link: "https://www.youtube.com/results?search_query=silk+press+straight+hair+tutorial" },
+  { name: "Layered Long Cut", img: "101.jpg", link: "https://www.youtube.com/results?search_query=layered+long+hair+cut+tutorial" },
+  { name: "Boho Waves", img: "102.jpg", link: "https://www.youtube.com/results?search_query=boho+waves+hairstyle+tutorial" },
+  { name: "Glass Hair", img: "103.jpg", link: "https://www.youtube.com/results?search_query=glass+hair+tutorial" },
+  { name: "Loose Waves", img: "104.jpg", link: "https://www.youtube.com/results?search_query=loose+waves+hairstyle+tutorial" },
+  { name: "Curly Long Hair", img: "105.jpg", link: "https://www.youtube.com/results?search_query=curly+long+hair+tutorial" },
+  { name: "High Pony Long", img: "106.jpg", link: "https://www.youtube.com/results?search_query=high+ponytail+long+hair+tutorial" },
+  { name: "Low Pony Long", img: "107.jpg", link: "https://www.youtube.com/results?search_query=low+ponytail+long+hair+tutorial" },
+  { name: "Bubble Pony Long", img: "108.jpg", link: "https://www.youtube.com/results?search_query=bubble+ponytail+long+hair+tutorial" },
+  { name: "Side Swept Long", img: "109.jpg", link: "https://www.youtube.com/results?search_query=side+swept+long+hair+tutorial" },
+  { name: "Twisted Long Hair", img: "110.jpg", link: "https://www.youtube.com/results?search_query=twisted+long+hair+tutorial" },
+  { name: "Top Knot Long", img: "111.jpg", link: "https://www.youtube.com/results?search_query=top+knot+long+hair+tutorial" },
+  { name: "Crown Long Hair", img: "112.jpg", link: "https://www.youtube.com/results?search_query=crown+long+hair+tutorial" },
+  { name: "Messy Long Hair", img: "113.jpg", link: "https://www.youtube.com/results?search_query=messy+long+hair+tutorial" },
+  { name: "Side Bubble Long", img: "114.jpg", link: "https://www.youtube.com/results?search_query=side+bubble+long+hair+tutorial" },
+  { name: "Infinity Long", img: "115.jpg", link: "https://www.youtube.com/results?search_query=infinity+long+hair+tutorial" },
+  { name: "Half-Up Long", img: "116.jpg", link: "https://www.youtube.com/results?search_query=half+up+long+hair+tutorial" },
+  { name: "Low Bun Long", img: "117.jpg", link: "https://www.youtube.com/results?search_query=low+bun+long+hair+tutorial" },
+  { name: "Side Bun Long", img: "118.jpg", link: "https://www.youtube.com/results?search_query=side+bun+long+hair+tutorial" },
+  { name: "Twist Long Hair", img: "119.jpg", link: "https://www.youtube.com/results?search_query=twist+long+hair+tutorial" },
+  { name: "Fishtail Long", img: "120.jpg", link: "https://www.youtube.com/results?search_query=fishtail+braid+long+hair+tutorial" },
+  { name: "Dutch Braid Long", img: "121.jpg", link: "https://www.youtube.com/results?search_query=dutch+braid+long+hair+tutorial" },
+  { name: "French Braid Long", img: "122.jpg", link: "https://www.youtube.com/results?search_query=french+braid+long+hair+tutorial" },
+  { name: "Side Top Knot Long", img: "123.jpg", link: "https://www.youtube.com/results?search_query=side+top+knot+long+hair+tutorial" },
+  { name: "Double Braid Long", img: "124.jpg", link: "https://www.youtube.com/results?search_query=double+braid+long+hair+tutorial" },
+  { name: "Layered Waves Long", img: "125.jpg", link: "https://www.youtube.com/results?search_query=layered+waves+long+hair+tutorial" },
+  { name: "Curly Top Knot Long", img: "126.jpg", link: "https://www.youtube.com/results?search_query=curly+top+knot+long+hair+tutorial" },
+  { name: "Mini Buns Long", img: "127.jpg", link: "https://www.youtube.com/results?search_query=mini+buns+long+hair+tutorial" },
+  { name: "Side Twists Long", img: "128.jpg", link: "https://www.youtube.com/results?search_query=side+twists+long+hair+tutorial" },
+
+];
+ 
+const container = document.getElementById("hairstyles-container");
+
+// Generate cards
+hairstyles.forEach(style => {
+  const card = document.createElement("div");
+  card.classList.add("hairstyle-card");
+
+  card.innerHTML = `
+    <a href="${style.link}" target="_blank">
+      <img src="${style.img}" alt="${style.name}">
+      <h3>${style.name}</h3>
+    </a>
+    <a href="${style.link}" target="_blank" class="tutorial-link">Tutorial Link</a>
+  `;
+
+  container.appendChild(card);
+});
+
+// Search functionality
+const searchInput = document.getElementById('hairstyle-search');
+searchInput.addEventListener('input', () => {
+  const filter = searchInput.value.toLowerCase();
+  const cards = document.querySelectorAll('.hairstyle-card');
+
+  cards.forEach(card => {
+    const name = card.querySelector('h3').textContent.toLowerCase();
+    card.style.display = name.includes(filter) ? 'flex' : 'none';
+  });
+});
+</script>
+
+<h1 style="text-align:center; margin: 30px 0;">Enjoy 😃</h1>
+
+</body>
+</html>
