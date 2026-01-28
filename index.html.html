@@ -1,0 +1,2557 @@
+<!DOCTYPE html>
+<html lang="en">
+  <link rel="stylesheet" href="style.css">
+<head>
+<meta charset="UTF-8">
+<title>Hairstyle Studio</title>
+<style>
+body {
+  margin: 0;
+  font-family: "Segoe UI", sans-serif;
+  background: linear-gradient(135deg, #2b244a, #4b3f72);
+  color: white;
+  height: 100vh;
+  overflow: hidden;
+}
+
+#app {
+  display: grid;
+  grid-template-columns: 260px 1fr 360px;
+  height: 100vh;
+}
+
+/* ===== SIDEBAR ===== */
+#sidebar {
+  background: rgba(0,0,0,0.4);
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+#sidebar h2 { font-size: 26px; }
+
+.sidebar-btn {
+  padding: 14px;
+  font-size: 20px;
+  border-radius: 12px;
+  cursor: pointer;
+  background: rgba(255,255,255,0.1);
+  transition: 0.25s;
+}
+
+.sidebar-btn:hover { background: rgba(255,255,255,0.2); }
+
+/* ===== CENTER ===== */
+#content {
+  position: relative;
+  padding: 20px;
+  overflow-y: auto;
+}
+
+#particles {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.particle {
+  position: absolute;
+  width: 6px;
+  height: 6px;
+  background: rgba(255,255,255,0.18);
+  border-radius: 50%;
+  animation: float 10s linear infinite;
+}
+
+@keyframes float {
+  from { transform: translateY(110vh); opacity:0; }
+  to { transform: translateY(-10vh); opacity:1; }
+}
+
+#hairstyles {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 18px;
+}
+
+.hairstyle {
+  background: rgba(255,255,255,0.12);
+  border-radius: 18px;
+  padding: 10px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.hairstyle:hover { transform: translateY(-6px) scale(1.05); }
+
+.hairstyle img {
+  width: 100%;
+  height: 160px;
+  object-fit: cover;
+  border-radius: 14px;
+}
+
+/* ===== INFO PANEL ===== */
+#info-panel {
+  background: rgba(255,255,255,0.1);
+  padding: 20px;
+  overflow-y: auto;
+}
+
+#info-title { font-size: 30px; }
+.section-title { font-size: 22px; margin-top: 18px; }
+.section-text { font-size: 18px; line-height: 1.6; white-space: pre-line; }
+#next-step-btn {
+  margin-top: 10px;
+  padding: 10px 14px;
+  border-radius: 12px;
+  border: none;
+  cursor: pointer;
+  background: linear-gradient(135deg,#6d5fa3,#8b7dc1);
+  color: white;
+  font-weight: 700;
+}
+
+/* ===== LANGUAGE ===== */
+#language-switcher {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  display: flex;
+  gap: 10px;
+  background: rgba(255,255,255,0.15);
+  padding: 12px;
+  border-radius: 18px;
+}
+
+#language-switcher button {
+  padding: 10px 14px;
+  border-radius: 12px;
+  border: none;
+  cursor: pointer;
+  background: linear-gradient(135deg,#6d5fa3,#8b7dc1);
+  color: white;
+  font-weight: 700;
+}
+
+/* ===== MUSIC GRID ===== */
+#music-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 18px;
+  margin-top: 20px;
+}
+
+.music-box {
+  background: rgba(255,255,255,0.15);
+  border-radius: 14px;
+  overflow: hidden;
+  cursor: pointer;
+  transition: 0.25s;
+}
+
+.music-box:hover { transform: scale(1.05); }
+
+.music-box img {
+  width: 100%;
+  height: 120px;
+  object-fit: cover;
+}
+
+.music-box .track-name {
+  padding: 10px;
+  text-align: center;
+  font-size: 16px;
+  font-weight: bold;
+}
+</style>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<!-- MOBILE NAV (only visible on mobile) -->
+<div id="mobile-nav">
+  <div class="mobile-btn" data-cat="braids">Braids</div>
+  <div class="mobile-btn" data-cat="ponytails">Pony</div>
+  <div class="mobile-btn" data-cat="buns">Buns</div>
+  <div class="mobile-btn" data-cat="curly">Curly</div>
+  <div class="mobile-btn" onclick="goHome()">🎵</div>
+</div>
+<!-- FLOATING BUBBLES -->
+<div id="floating-bubbles">
+  <div class="bubble"></div>
+  <div class="bubble"></div>
+  <div class="bubble"></div>
+  <div class="bubble"></div>
+</div>
+
+
+<body>
+  <div class="swipe-hints">
+  <span class="left">⬅️</span>
+  <span class="right">➡️</span>
+</div>
+
+
+<div id="app">
+
+<!-- SIDEBAR -->
+<div id="sidebar">
+  <h2>Menu</h2>
+  <div class="sidebar-btn" onclick="goHome()">🎵 lofi Music</div>
+
+  <h2>Categories</h2>
+  <div class="sidebar-btn category" data-cat="braids">Braids</div>
+  <div class="sidebar-btn category" data-cat="ponytails">Ponytails</div>
+  <div class="sidebar-btn category" data-cat="buns">Buns & Updos</div>
+  <div class="sidebar-btn category" data-cat="curly">Curly</div>
+  <div class="sidebar-btn category" data-cat="short">Short Hair</div>
+  <div class="sidebar-btn category" data-cat="long">Long Hair</div>
+  <a href="1234.html" class="sidebar-btn category">tutorial-videos</a>
+</div>
+
+<!-- CENTER -->
+<div id="content">
+  <div id="particles"></div>
+  <div id="hairstyles"></div>
+</div>
+
+<!-- INFO -->
+<div id="info-panel">
+  <h2 id="info-title">Welcome ✨</h2>
+  <div class="section-title">Tools</div>
+  <div class="section-text" id="tools"></div>
+  <div class="section-title">Steps</div>
+  <div class="section-text" id="steps"></div>
+  <button id="next-step-btn" onclick="nextStep()">Next Step ➡</button>
+  <div class="section-title">Tips</div>
+  <div class="section-text" id="tips"></div>
+  <div class="swipe-handle"></div>
+
+</div>
+<!-- SWIPE INDICATOR (like TikTok) -->
+<div id="swipe-indicator">
+  <div class="bar"></div>
+  <div class="bar"></div>
+  <div class="bar"></div>
+  <div class="bar"></div>
+</div>
+
+</div>
+
+
+<!-- AUDIO ELEMENT -->
+<audio id="bg-music" loop></audio>
+
+<script>
+/* ===== HAIR DATA ===== */
+const hairData = {
+  braids: [ "French Braid","Dutch Braid","Fishtail Braid","Box Braids","Crown Braid",
+    "Milkmaid Braid","Waterfall Braid","Halo Braid","Goddess Braid","Viking Braid",
+    "Pull-Through Braid","Lace Braid","Infinity Braid","Mermaid Braid","Rope Braid",
+    "Twist Braid","Cornrow Braid","Bubble Braid","Ladder Braid","Chain Braid",
+    "Double Braid","Triple Braid","Side Braid","Front Braid","Diagonal Braid",
+    "Zigzag Braid","Reverse Braid","Fishtail Crown","Lattice Braid","Checkerboard Braid",
+    "Side French","Side Dutch","Crown Twist","Double Fishtail","Braided Pony Wrap",
+    "French Rope","Herringbone","Braided Bun","Braided Low Ponytail","Braided Top Knot",
+    "Halo Twist","Boho Braid","Braided Bob","French Twist Braid","Rope Halo",
+    "Waterfall Twist","Infinity Twist","Double Rope","Twisted Milkmaid","Braided Mohawk",
+    "Side Bubble Braid","Goddess Twist","Braided Side Pony","Braided Updo","Mermaid Twist",
+    "Crown Fishtail","Lace Crown","Mini Braids","Braided Bun Crown"],
+  ponytails: [ "High Sleek Ponytail",
+    "Low Romantic Ponytail",
+    "Bubble Ponytail",
+    "Side Ponytail",
+    "Wrapped Ponytail",
+    "Braided Ponytail",
+    "Voluminous Ponytail",
+    "Curly Ponytail",
+    "Twisted Ponytail",
+    "Top Knot Ponytail",
+    "Side Swept Pony",
+    "Double Ponytail",
+    "Fishtail Ponytail",
+    "French Braid Pony",
+    "Dutch Braid Pony",
+    "High Wrap Pony",
+    "Low Side Pony",
+    "Bubble Wrap Pony",
+    "Braided Low Pony",
+    "Half-Up Pony"],
+  buns: [ "Messy Bun",
+    "Low Chignon",
+    "Top Knot",
+    "Ballerina Bun",
+    "Braided Bun",
+    "Twisted Bun",
+    "Knotted Bun",
+    "High Bun",
+    "Half-Up Bun",
+    "Side Bun",
+    "Double Bun",
+    "Braided Top Knot",
+    "Low Messy Bun",
+    "Crown Bun",
+    "Bubble Bun",
+    "French Twist Bun",
+    "Dutch Twist Bun",
+    "Infinity Bun",
+    "Boho Bun",
+    "Goddess Bun",
+    "Mini Bun",
+    "Curly Bun",
+    "Side Swept Bun",
+    "Twist Bun",
+    "Fishtail Bun",
+    "Rope Bun",
+    "Double Top Knot",
+    "Side Bubble Bun",
+    "Half-Braided Bun",
+    "Halo Bun",
+    "Top Bubble Bun"],
+  curly: ["Defined Ringlets",
+    "Soft Beach Curls",
+    "Curly Bob",
+    "Voluminous Curls",
+    "Finger Coils",
+    "Wash and Go",
+    "Loose Curls",
+    "Tight Curls",
+    "Spiral Curls",
+    "Curly Ponytail",
+    "Curly Half-Up",
+    "Curly Top Knot",
+    "Messy Curls",
+    "Side Swept Curls",
+    "Boho Curls",
+    "Curly Bob with Bangs",
+    "Layered Curls",
+    "Curly Mohawk",
+    "Twist Out",
+    "Bantu Knots",
+    "Halo Curls",
+    "Frohawk",
+    "Curly Bob Low Pony",
+    "Bubble Curls",
+    "French Curly Twist",
+    "Side Curly Twist",
+    "Infinity Curls",
+    "Double Twist Out",
+    "Curly Space Buns",
+    "Top Knot Curls",
+    "Low Bun Curls",
+    "Curly Fishtail",
+    "Side Rope Curls",
+    "Mini Twists",
+    "Curly Pony Wrap",
+    "Side Bubble Curls",
+    "Twist Out Half-Up",
+    "French Twist Out",
+    "Halo Twist Out"],
+  short: [ "Pixie Cut",
+    "Textured Crop",
+    "French Bob",
+    "Buzz Cut",
+    "Layered Short Cut",
+    "Asymmetrical Bob",
+    "Short Curly Bob",
+    "Side Swept Pixie",
+    "Mini Bob",
+    "Messy Pixie",
+    "Short Undercut",
+    "Stacked Bob",
+    "Mini Pixie",
+    "Curly Crop",
+    "Short Layered Bob",
+    "Short Afro"],
+  long: [ "Hollywood Waves",
+    "Straight Silk Press",
+    "Layered Long Cut",
+    "Boho Waves",
+    "Glass Hair",
+    "Loose Waves",
+    "Curly Long Hair",
+    "High Pony Long",
+    "Low Pony Long",
+    "Bubble Pony Long",
+    "Side Swept Long",
+    "Twisted Long Hair",
+    "Top Knot Long",
+    "Crown Long Hair",
+    "Messy Long Hair",
+    "Side Bubble Long",
+    "Infinity Long",
+    "Half-Up Long",
+    "Low Bun Long",
+    "Side Bun Long",
+    "Twist Long Hair",
+    "Fishtail Long",
+    "Dutch Braid Long",
+    "French Braid Long",
+    "Side Top Knot Long",
+    "Double Braid Long",
+    "Layered Waves Long",
+    "Curly Top Knot Long",
+    "Mini Buns Long",
+    "Side Twists Long"]
+};
+
+/* ===== MANUAL HAIR IMAGES ===== */
+const hairImages = {
+  braids: {
+"French Braid":"1.jpg",
+"Dutch Braid":"2.jpg",
+"Fishtail Braid":"3.jpg",
+"Box Braids":"4.jpg",
+"Crown Braid":"5.jpg",
+"Milkmaid Braid":"6.jpg",
+"Waterfall Braid":"7.jpg",
+"Halo Braid":"8.jpg",
+"Goddess Braid":"9.jpg",
+"Viking Braid":"10.jpg",
+"Pull-Through Braid":"11.jpg",
+"Lace Braid":"12.jpg",
+"Infinity Braid":"13.jpg",
+"Mermaid Braid":"14.jpg",
+"Rope Braid":"15.jpg",
+"Twist Braid":"16.jpg",
+"Cornrow Braid":"17.jpg",
+"Bubble Braid":"18.jpg",
+"Ladder Braid":"19.jpg",
+"Chain Braid":"20.jpg",
+"Double Braid":"21.jpg",
+"Triple Braid":"22.jpg",
+"Side Braid":"23.jpg",
+"Front Braid":"24.jpg",
+"Diagonal Braid":"25.jpg",
+"Zigzag Braid":"26.jpg",
+"Reverse Braid":"27.jpg",
+"Fishtail Crown":"28.jpg",
+"Lattice Braid":"29.jpg",
+"Checkerboard Braid":"30.jpg",
+"Side French":"31.jpg",
+"Side Dutch":"32.jpg",
+"Crown Twist":"33.jpg",
+"Double Fishtail":"34.jpg",
+"Braided Pony Wrap":"35.jpg",
+"French Rope":"36.jpg",
+"Herringbone":"37.jpg",
+"Braided Bun":"38.jpg",
+"Braided Low Ponytail":"39.jpg",
+"Braided Top Knot":"40.jpg",
+"Halo Twist":"41.jpg",
+"Boho Braid":"42.jpg",
+"Braided Bob":"43.jpg",
+"French Twist Braid":"44.jpg",
+"Rope Halo":"45.jpg",
+"Waterfall Twist":"46.jpg",
+"Infinity Twist":"47.jpg",
+"Double Rope":"48.jpg",
+"Twisted Milkmaid":"49.jpg",
+"Braided Mohawk":"50.jpg",
+"Side Bubble Braid":"51.jpg",
+"Goddess Twist":"52.jpg",
+"Braided Side Pony":"53.jpg",
+"Braided Updo":"54.jpg",
+"Mermaid Twist":"55.jpg",
+"Crown Fishtail":"56.jpg",
+"Lace Crown":"57.jpg",
+"Mini Braids":"58.jpg",
+"Braided Bun Crown":"59.jpg"
+},
+  ponytails: {"High Sleek Ponytail":"160.jpg",
+"Low Romantic Ponytail":"161.jpg",
+"Bubble Ponytail":"162.jpg",
+"Side Ponytail":"163.jpg",
+"Wrapped Ponytail":"164.jpg.jpg",
+"Braided Ponytail":"165.jpg.jpg",
+"Voluminous Ponytail":"166.jpg.jpg",
+"Curly Ponytail":"167.jpg",
+"Twisted Ponytail":"168.jpg",
+"Top Knot Ponytail":"169.jpg",
+"Side Swept Pony":"170,jpg.webp",
+"Double Ponytail":"171.jpg",
+"Fishtail Ponytail":"172.jpg",
+"French Braid Pony":"173.jpg",
+"Dutch Braid Pony":"174.jpg",
+"High Wrap Pony":"175.jpg",
+"Low Side Pony":"176.jpg",
+"Bubble Wrap Pony":"177.jpg",
+"Braided Low Pony":"178.jpg",
+"Half-Up Pony":"179.jpg"},
+  buns: {"Messy Bun":"129.jpg",
+"Low Chignon":"130.jpg",
+"Top Knot":"131.jpg",
+"Ballerina Bun":"132.jpg",
+"Braided Bun":"133.jpg",
+"Twisted Bun":"134.jpg",
+"Knotted Bun":"135.jpg",
+"High Bun":"136.jpg",
+"Half-Up Bun":"137.jpg",
+"Side Bun":"138.jpg",
+"Double Bun":"139.jpg",
+"Braided Top Knot":"140.jpg",
+"Low Messy Bun":"141.jpg",
+"Crown Bun":"142.jpg",
+"Bubble Bun":"143.jpg",
+"French Twist Bun":"144.jpg",
+"Dutch Twist Bun":"145.jpg",
+"Infinity Bun":"146.jpg",
+"Boho Bun":"147.jpg",
+"Goddess Bun":"148.jpg",
+"Mini Bun":"149.jpg",
+"Curly Bun":"150.jpg",
+"Side Swept Bun":"151.jpg",
+"Twist Bun":"152.jpg",
+"Fishtail Bun":"153.jpg",
+"Rope Bun":"154.jpg",
+"Double Top Knot":"155.jpg",
+"Side Bubble Bun":"156.jpg",
+"Half-Braided Bun":"157.jpg",
+"Halo Bun":"158.jpg",
+"Top Bubble Bun":"159.jpg"
+},
+  curly: {"Defined Ringlets":"60.jpg",
+"Soft Beach Curls":"61.jpg",
+"Curly Bob":"62.jpg",
+"Voluminous Curls":"63.jpg",
+"Finger Coils":"64.jpg",
+"Wash and Go":"65.jpg",
+"Loose Curls":"66.jpg",
+"Tight Curls":"67.jpg",
+"Spiral Curls":"68.jpg",
+"Curly Ponytail":"69.jpg",
+"Curly Half-Up":"70.jpg",
+"Curly Top Knot":"71.jpg",
+"Messy Curls":"72.jpg",
+"Side Swept Curls":"73.jpg",
+"Boho Curls":"74.jpg",
+"Curly Bob with Bangs":"75.jpg",
+"Layered Curls":"76.jpg",
+"Curly Mohawk":"77.jpg",
+"Twist Out":"78.jpg",
+"Bantu Knots":"79.jpg",
+"Halo Curls":"80.jpg",
+"Frohawk":"81.jpg",
+"Curly Bob Low Pony":"82.jpg",
+"Bubble Curls":"83.jpg",
+"French Curly Twist":"84.jpg",
+"Side Curly Twist":"85.jpg",
+"Infinity Curls":"86.jpg",
+"Double Twist Out":"87.jpg",
+"Curly Space Buns":"88.jpg",
+"Top Knot Curls":"89.jpg",
+"Low Bun Curls":"90.jpg",
+"Curly Fishtail":"91.jpg",
+"Side Rope Curls":"92.jpg",
+"Mini Twists":"93.jpg",
+"Curly Pony Wrap":"94.jpg",
+"Side Bubble Curls":"95.jpg",
+"Twist Out Half-Up":"96.jpg",
+"French Twist Out":"97.jpg",
+"Halo Twist Out":"98.jpg"
+},
+  short: {"Pixie Cut":"180.jpg",
+"Textured Crop":"181.jpg",
+"French Bob":"182.jpg",
+"Buzz Cut":"183.jpg",
+"Layered Short Cut":"184.jpg",
+"Asymmetrical Bob":"185.jpg",
+"Short Curly Bob":"186.jpg",
+"Side Swept Pixie":"187.jpg",
+"Mini Bob":"188.jpg",
+"Messy Pixie":"189.jpg",
+"Short Undercut":"190.jpg",
+"Stacked Bob":"191.jpg",
+"Mini Pixie":"192.jpg",
+"Curly Crop":"193.jpg",
+"Short Layered Bob":"194.jpg",
+"Short Afro":"195.webp"
+},
+  long: {"Hollywood Waves":"99.jpg",
+"Straight Silk Press":"100.jpg",
+"Layered Long Cut":"101.jpg",
+"Boho Waves":"102.jpg",
+"Glass Hair":"103.jpg",
+"Loose Waves":"104.jpg",
+"Curly Long Hair":"105.jpg",
+"High Pony Long":"106.jpg",
+"Low Pony Long":"107.jpg",
+"Bubble Pony Long":"108.jpg",
+"Side Swept Long":"109.jpg",
+"Twisted Long Hair":"110.jpg",
+"Top Knot Long":"111.jpg",
+"Crown Long Hair":"112.jpg",
+"Messy Long Hair":"113.jpg",
+"Side Bubble Long":"114.jpg",
+"Infinity Long":"115.jpg",
+"Half-Up Long":"116.jpg",
+"Low Bun Long":"117.jpg",
+"Side Bun Long":"118.jpg",
+"Twist Long Hair":"119.jpg",
+"Fishtail Long":"120.jpg",
+"Dutch Braid Long":"121.jpg",
+"French Braid Long":"122.jpg",
+"Side Top Knot Long":"123.jpg",
+"Double Braid Long":"124.jpg",
+"Layered Waves Long":"125.jpg",
+"Curly Top Knot Long":"126.jpg",
+"Mini Buns Long":"127.jpg",
+"Side Twists Long":"128.jpg"}
+};
+
+/* ===== DETAILED STEPS ===== */
+const hairstyleSteps = {
+  "French Braid":[
+    "Brush your hair thoroughly to remove tangles.",
+    "Divide hair into three equal sections at the crown.",
+    "Cross the right section over the middle section.",
+    "Cross the left section over the middle section.",
+    "Add small strands to each side as you braid.",
+    "Continue until reaching the nape of the neck.",
+    "Secure the braid with an elastic band.",
+    "Loosen braid gently for a soft look.",
+    "Smooth flyaways with hairspray or gel."
+
+  ],
+  "Dutch Braid":[
+    "Comb hair to remove all knots.",
+    "Divide into three sections at the top.",
+    "Cross the right section UNDER the middle section.",
+    "Cross the left section UNDER the middle section.",
+    "Add strands before crossing under.",
+    "Continue down to the nape.",
+    "Secure with elastic.",
+    "Adjust braid to be even.",
+    "Set with hairspray."
+  ],
+  "Fishtail Braid":[
+    "Brush hair to remove tangles.",
+    "Split hair into two sections.",
+    "Take a small strand from left outer section and cross over to right.",
+    "Take a small strand from right outer section and cross over to left.",
+    "Repeat until hair ends.",
+    "Secure with elastic.",
+    "Gently pull braid for volume.",
+    "Use hairspray for hold."
+  ],
+  "Box Braids":[
+    "Divide hair into small square sections.",
+    "Braid each section from root to end.",
+    "Add synthetic hair if desired.",
+    "Secure ends with small elastics.",
+    "Repeat for all sections.",
+    "Apply edge control around hairline.",
+    "Moisturize scalp to prevent dryness."
+  ],
+  "Crown Braid":[
+    "Comb hair and part circularly around the head.",
+    "Start a French braid above one ear.",
+    "Follow circular path adding hair as you go.",
+    "Continue until braid meets starting point.",
+    "Tuck ends under and secure with pins.",
+    "Set with hairspray."
+  ],
+  "Milkmaid Braid":[
+    "Create two braids on either side.",
+    "Lift first braid over head and secure with pins.",
+    "Lift second braid under first and pin.",
+    "Tuck ends neatly.",
+    "Spray lightly for hold."
+  ],
+  "Waterfall Braid":[
+    "Part hair to one side.",
+    "Pick three strands to start braid.",
+    "Drop middle strand as you cross over, pick new strand.",
+    "Continue dropping middle strand along braid.",
+    "Secure with elastic.",
+    "Repeat for desired length.",
+    "Set with hairspray."
+  ],
+  "Halo Braid":[
+    "Start French braid at one side of head.",
+    "Braid around hairline to form circle.",
+    "Add strands as you go.",
+    "Tuck ends under start point and secure.",
+    "Adjust for neatness.",
+    "Use pins and hairspray to finish."
+  ],
+  "Goddess Braid":[
+    "Part hair into thick sections.",
+    "Braid each section tightly close to scalp.",
+    "Follow desired pattern.",
+    "Secure ends with elastic.",
+    "Gently pancake braids for volume.",
+    "Apply light hairspray."
+  ],
+  "Viking Braid":[
+    "Part hair in desired Viking style.",
+    "Create tight cornrows along scalp.",
+    "Braid extensions if desired.",
+    "Secure ends.",
+    "Add accessories like beads if desired.",
+    "Set with hairspray for hold."
+  ],
+  "Pull-Through Braid": [
+    "Brush your hair thoroughly.",
+    "Create a small ponytail at the crown and secure with an elastic.",
+    "Create another ponytail directly under the first and pull it through the top one.",
+    "Continue adding sections and pulling them through until reaching the end.",
+    "Secure the final section with an elastic.",
+    "Loosen sections gently for a fuller look.",
+    "Set with hairspray."
+  ],
+  "Lace Braid": [
+    "Comb hair and pick three strands at the crown.",
+    "Start a French braid but only add hair from one side.",
+    "Continue braiding down the head, adding hair from the designated side.",
+    "Secure the braid with an elastic at the end.",
+    "Loosen slightly for softness.",
+    "Apply hairspray to hold."
+  ],
+  "Infinity Braid": [
+    "Divide hair into two sections.",
+    "Take a small strand from the left and cross over the top of the right section.",
+    "Repeat by alternating strands in a circular motion.",
+    "Continue until the braid reaches the ends.",
+    "Secure with an elastic.",
+    "Adjust loops for an intricate look."
+  ],
+  "Mermaid Braid": [
+    "Brush your hair and start a side part.",
+    "Create a French braid from the front side of the head.",
+    "As you braid, pull in small strands from the sides and leave some hair loose.",
+    "Continue down to the end, keeping it slightly messy.",
+    "Secure with elastic and gently tug for volume.",
+    "Use hairspray lightly."
+  ],
+  "Rope Braid": [
+    "Divide hair into two equal sections.",
+    "Twist each section individually clockwise.",
+    "Wrap the two twisted sections around each other counterclockwise.",
+    "Secure the end with an elastic.",
+    "Loosen gently for softness.",
+    "Use hairspray to prevent frizz."
+  ],
+  "Twist Braid": [
+    "Separate hair into two sections.",
+    "Twist each section clockwise.",
+    "Cross the two twisted sections over each other.",
+    "Continue twisting down to the end.",
+    "Secure with elastic.",
+    "Loosen gently for a natural look."
+  ],
+  "Cornrow Braid": [
+    "Comb hair tightly and apply gel for grip.",
+    "Divide hair into small rows along the scalp.",
+    "Start braiding tightly close to the scalp from front to back.",
+    "Continue each row until reaching the nape.",
+    "Secure ends with small elastics or beads.",
+    "Repeat for each row.",
+    "Set with hairspray for hold."
+  ],
+  "Bubble Braid": [
+    "Tie a high ponytail with an elastic.",
+    "Add elastics every 2–3 inches down the ponytail.",
+    "Gently tug each segment to create bubble shapes.",
+    "Continue until reaching the end of the hair.",
+    "Spray lightly with hairspray.",
+    "Repeat for additional ponytails if desired."
+  ],
+  "Ladder Braid": [
+    "Start a French braid from the crown.",
+    "Create small side strands as ‘rungs’ and loop them under the main braid.",
+    "Continue braiding down, adding strands for the ladder effect.",
+    "Secure the end with an elastic.",
+    "Adjust loops gently for symmetry.",
+    "Set with hairspray."
+  ],
+  "Chain Braid": [
+    "Begin a French braid at the top of the head.",
+    "Instead of crossing over normally, loop each section under and out to form a chain effect.",
+    "Continue down the head to the nape.",
+    "Secure with elastic.",
+    "Loosen sections for a pronounced chain effect.",
+    "Use hairspray to finish."
+  ],
+  "Double Braid": [
+    "Part hair down the middle into two equal sections.",
+    "Start a French braid on one side from the front to the nape.",
+    "Secure with an elastic and gently pancake for volume.",
+    "Repeat on the other side.",
+    "Optionally, leave ends loose or tie together.",
+    "Use hairspray lightly to hold."
+  ],
+  "Triple Braid": [
+    "Divide hair into three sections horizontally or vertically.",
+    "Braid each section individually from root to end.",
+    "Secure each braid with elastics.",
+    "Optionally, combine braids at the ends.",
+    "Pancake gently for a fuller look.",
+    "Apply hairspray for hold."
+  ],
+  "Side Braid": [
+    "Comb hair to one side.",
+    "Start a French or Dutch braid from the front along the side of the head.",
+    "Continue down over the shoulder.",
+    "Secure with elastic at the end.",
+    "Loosen gently for a soft look.",
+    "Set with hairspray."
+  ],
+  "Front Braid": [
+    "Part hair and pick a section at the front hairline.",
+    "Create a small French or Dutch braid along the hairline.",
+    "Braid only the front section or extend it to the back.",
+    "Secure with elastic or pins.",
+    "Adjust braid for neatness.",
+    "Use hairspray to finish."
+  ],
+  "Diagonal Braid": [
+    "Part hair diagonally from one side to the other.",
+    "Start a French or Dutch braid along the diagonal path.",
+    "Add hair gradually as you go down.",
+    "Secure with elastic at the end.",
+    "Loosen braid for a soft, flowing look.",
+    "Apply hairspray to hold."
+  ],
+  "Zigzag Braid": [
+    "Part hair into a zigzag pattern using a comb.",
+    "Start braiding along the zigzag lines using French or Dutch technique.",
+    "Continue braid until reaching ends.",
+    "Secure with elastic.",
+    "Adjust angles slightly for more defined zigzag.",
+    "Use hairspray for hold."
+  ],
+  "Reverse Braid": [
+    "Part hair and start at the nape of the neck.",
+    "Braid upward using a Dutch braid (underhand) technique.",
+    "Add strands gradually as you move up.",
+    "Secure at the crown or with an elastic.",
+    "Loosen braid gently for volume.",
+    "Spray lightly to set."
+  ],
+  "Fishtail Crown": [
+    "Create two fishtail braids on either side of the head.",
+    "Wrap each braid around the crown and overlap.",
+    "Tuck ends under and secure with pins.",
+    "Loosen braid for a voluminous crown effect.",
+    "Check symmetry and adjust.",
+    "Use hairspray to finish."
+  ],
+  "Lattice Braid": [
+    "Divide hair into a grid-like pattern with horizontal and vertical parts.",
+    "Braid small sections, weaving in a lattice design.",
+    "Secure all ends with elastics or pins.",
+    "Adjust for neat symmetry.",
+    "Loosen sections for a softer look.",
+    "Set with hairspray."
+  ],
+  "Checkerboard Braid": [
+    "Divide hair into small square sections.",
+    "Braid each section individually from root to tip.",
+    "Alternate direction or braid style to create checkerboard effect.",
+    "Secure ends with elastics.",
+    "Loosen braids for volume.",
+    "Apply hairspray lightly."
+  ],
+  "Braided Bun Crown": [
+    "Brush hair thoroughly to remove all tangles.",
+    "Create two or more braids on either side of your head.",
+    "Wrap each braid around the crown of your head to form a bun-like halo.",
+    "Pin each braid securely with bobby pins.",
+    "Tuck in any loose ends.",
+    "Loosen gently for a soft, voluminous look.",
+    "Use hairspray to hold in place."
+  ],
+  "Mini Braids": [
+    "Comb hair to remove tangles.",
+    "Divide hair into multiple small sections (about 0.5–1 inch each).",
+    "Braid each section tightly from root to tip.",
+    "Secure with small elastics at the end of each braid.",
+    "Optionally, add beads or accessories.",
+    "Gently separate braids for volume.",
+    "Use hairspray lightly if needed."
+  ],
+  "Crown Fishtail": [
+    "Create a fishtail braid starting at one side of the head.",
+    "Wrap the braid around the crown, following the hairline.",
+    "Secure the end with pins under the starting point.",
+    "Loosen sections for a full, textured look.",
+    "Adjust symmetry around the head.",
+    "Use hairspray to set in place."
+  ],
+  "Lace Crown": [
+    "Take a section from the front hairline.",
+    "Start a lace braid (adding hair from one side only).",
+    "Braid along the hairline to form a crown.",
+    "Pin the end under the starting point securely.",
+    "Loosen gently for softness and volume.",
+    "Spray lightly with hairspray."
+  ],
+  "Mini Braids": [
+    "Comb hair and divide into very small sections.",
+    "Braid each small section individually from root to tip.",
+    "Secure ends with tiny elastics.",
+    "Add beads or accessories if desired.",
+    "Loosen slightly for a natural look.",
+    "Apply hairspray to keep neat."
+  ],
+  "Braided Bun Crown": [
+    "Create multiple small braids around the head.",
+    "Wrap and pin each braid in a circular bun shape at the crown.",
+    "Secure all ends with bobby pins.",
+    "Tug gently to give a soft, voluminous appearance.",
+    "Check symmetry.",
+    "Finish with hairspray."
+  ],
+  "Braided Bun Crown": [
+    "Part hair into sections for multiple braids.",
+    "Braid each section from root to tip.",
+    "Wrap braids around head forming a crown bun.",
+    "Pin securely with bobby pins.",
+    "Tug gently for volume and shape.",
+    "Finish with hairspray for hold."
+  ],
+  "Braided Updo": [
+    "Brush hair and divide into sections for braiding.",
+    "Braid each section individually.",
+    "Wrap braids into an updo style and secure with pins.",
+    "Adjust braids for evenness and volume.",
+    "Smooth any flyaways.",
+    "Spray lightly with hairspray."
+  ],
+  "Mermaid Twist": [
+    "Part hair into two large sections.",
+    "Twist each section individually clockwise.",
+    "Wrap the two twisted sections around each other for a mermaid braid effect.",
+    "Secure ends with elastics.",
+    "Loosen gently for a soft, textured look.",
+    "Set with hairspray."
+  ],
+  "Crown Fishtail": [
+    "Part hair to one side.",
+    "Create a fishtail braid starting near the ear and wrap it around the crown.",
+    "Pin the end under the starting point.",
+    "Loosen sections for fullness.",
+    "Check symmetry.",
+    "Spray lightly with hairspray."
+  ],
+  "Side French":[
+    "Brush hair thoroughly.",
+    "Part hair to one side.",
+    "Pick three strands near the part.",
+    "Start a French braid crossing outer strands over the middle.",
+    "Add small sections of hair from scalp as you braid along the side.",
+    "Continue braiding until reaching the nape.",
+    "Secure with an elastic and gently loosen braid for volume.",
+    "Smooth flyaways with hairspray."
+  ],
+  "Side Dutch":[
+    "Detangle hair completely.",
+    "Part to the side you prefer.",
+    "Pick three strands near the part.",
+    "Braid by crossing the outer strands UNDER the middle strand (Dutch style).",
+    "Add small hair sections along the braid as you move down the side.",
+    "Finish at the nape and secure with elastic.",
+    "Adjust the braid thickness and spray lightly."
+  ],
+  "Crown Twist":[
+    "Brush hair and part horizontally from ear to ear.",
+    "Divide hair into two sections.",
+    "Start twisting the front section along the hairline.",
+    "Add hair gradually while twisting around the head to form a crown.",
+    "Continue until you reach the starting point.",
+    "Tuck ends under the twist and secure with pins.",
+    "Set with hairspray for hold."
+  ],
+  "Double Fishtail":[
+    "Brush hair to remove knots.",
+    "Divide hair into two equal sections.",
+    "Take small strands from the outside of each section and cross over to the opposite side.",
+    "Repeat until halfway down, then split into two separate fishtail braids.",
+    "Continue braiding each section to the ends.",
+    "Secure both braids with elastics.",
+    "Gently pancake braids for volume and finish with hairspray."
+  ],
+  "Braided Pony Wrap":[
+    "Start with a low or high ponytail and secure with an elastic.",
+    "Take a small section from the ponytail and braid it.",
+    "Wrap the braid around the base of the ponytail to hide the elastic.",
+    "Secure the end with pins underneath.",
+    "Adjust for symmetry and smooth any loose strands.",
+    "Spray lightly to set."
+  ],
+  "French Rope":[
+    "Brush hair and divide into two sections.",
+    "Twist both sections clockwise.",
+    "Twist the two sections around each other counter-clockwise.",
+    "Continue twisting along the length of the hair.",
+    "Secure the ends with elastic.",
+    "Loosen slightly for a fuller look.",
+    "Use hairspray for hold."
+  ],
+  "Herringbone":[
+    "Detangle hair thoroughly.",
+    "Divide hair into two main sections.",
+    "Take a thin strand from the outside of the left section and cross over to the right.",
+    "Take a thin strand from the outside of the right section and cross over to the left.",
+    "Repeat this weaving pattern down the hair.",
+    "Secure with an elastic at the ends.",
+    "Fluff braid lightly and finish with hairspray."
+  ],
+  "Braided Bun":[
+    "Brush hair and pull it into a high ponytail.",
+    "Braid the ponytail fully or partially.",
+    "Wrap the braid around the base of the ponytail to form a bun.",
+    "Secure with pins underneath and adjust for roundness.",
+    "Set with hairspray and smooth flyaways."
+  ],
+  "Braided Low Ponytail":[
+    "Brush hair to remove tangles.",
+    "Part hair in the center or side.",
+    "Start a braid at the nape of the neck.",
+    "Continue braiding downward and secure with elastic.",
+    "Gently pancake for volume.",
+    "Wrap a small braid around the elastic for a polished look."
+  ],
+  "Braided Top Knot":[
+    "Brush hair and pull into a high ponytail.",
+    "Braid the ponytail tightly.",
+    "Wrap the braid into a top knot shape on the crown.",
+    "Secure with pins and elastics as needed.",
+    "Adjust for symmetry and set with hairspray."
+  ],
+  "Halo Twist":[
+    "Brush hair and part evenly around the head.",
+    "Start a twist at one temple, taking two small sections.",
+    "Twist sections together while following the hairline around the head.",
+    "Add strands from scalp as you twist for a halo effect.",
+    "Continue until you meet the starting point.",
+    "Tuck ends under the twist and secure with pins.",
+    "Spray lightly to finish."
+  ],
+   "Boho Braid":[
+    "Brush hair to remove all tangles.",
+    "Part hair loosely in the center or slightly off-center.",
+    "Pick three small sections near the crown.",
+    "Begin a loose French braid adding strands lightly as you go.",
+    "Keep braid soft and slightly messy for a boho look.",
+    "Continue braiding down the side or back.",
+    "Secure with a small elastic and gently pull sections for volume.",
+    "Add small hair accessories if desired.",
+    "Spray lightly to set."
+  ],
+  "Braided Bob":[
+    "Brush hair thoroughly.",
+    "Part hair as desired for your bob style.",
+    "Take a small section near the front and start a tiny braid.",
+    "Braid along the hairline or side, keeping it close to scalp.",
+    "Secure with a small elastic or pin.",
+    "Repeat on the other side if desired.",
+    "Gently tug braid loops to loosen for texture.",
+    "Use hairspray to keep it in place."
+  ],
+  "French Twist Braid":[
+    "Brush hair to remove knots.",
+    "Divide hair into three sections at the crown.",
+    "Start a French braid, crossing outer sections over the middle.",
+    "Add strands from the top as you braid down.",
+    "Twist braid upwards towards the nape or crown as desired.",
+    "Secure ends with pins inside the twist.",
+    "Adjust braid for neatness and spray lightly."
+  ],
+  "Rope Halo":[
+    "Brush hair and part evenly around the head.",
+    "Divide hair into two sections.",
+    "Twist each section tightly.",
+    "Wrap the two twists around the head in a halo shape.",
+    "Secure ends under the starting point with pins.",
+    "Loosen sections slightly for a fuller halo.",
+    "Spray lightly to hold."
+  ],
+  "Waterfall Twist":[
+    "Part hair to the side.",
+    "Take three strands to start the braid.",
+    "Twist the right strand over the middle and drop the bottom strand.",
+    "Add a new section to replace the dropped strand.",
+    "Continue twisting along the head, dropping strands for the waterfall effect.",
+    "Secure with an elastic at the end.",
+    "Adjust gently for evenness and finish with hairspray."
+  ],
+  "Infinity Twist":[
+    "Brush hair thoroughly.",
+    "Divide hair into two equal sections.",
+    "Twist each section clockwise.",
+    "Cross the two sections over each other counter-clockwise.",
+    "Continue twisting down the hair length.",
+    "Secure the end with an elastic.",
+    "Gently pull twists for volume and spray lightly."
+  ],
+  "Double Rope":[
+    "Brush hair to detangle.",
+    "Divide hair into two main sections.",
+    "Twist each section clockwise.",
+    "Wrap sections around each other counter-clockwise.",
+    "Continue until reaching the ends.",
+    "Secure with elastic bands.",
+    "Loosen twists slightly for a fuller look.",
+    "Set with hairspray."
+  ],
+  "Twisted Milkmaid":[
+    "Brush hair and part evenly down the middle.",
+    "Create two low braids or twists on either side.",
+    "Lift the left braid over the top of the head and pin it.",
+    "Lift the right braid over and tuck under the first.",
+    "Tuck ends neatly and secure with pins.",
+    "Gently pull braids for volume.",
+    "Spray lightly to finish."
+  ],
+  "Braided Mohawk":[
+    "Brush hair and part the sides to create a center strip.",
+    "Start tight braids along the center from front to back.",
+    "Add hair gradually as you braid to create a Mohawk effect.",
+    "Secure ends with elastics.",
+    "Optionally pancake braids for volume.",
+    "Add small pins or accessories if desired.",
+    "Spray lightly for hold."
+  ],
+  "Side Bubble Braid":[
+    "Brush hair and create a side ponytail.",
+    "Tie small elastics along the length of the ponytail every few inches.",
+    "Gently pull each section between elastics to create 'bubbles'.",
+    "Optional: braid the base before making bubbles for extra texture.",
+    "Adjust bubble sizes evenly.",
+    "Set with hairspray."
+  ],
+  "Goddess Twist":[
+    "Brush hair thoroughly.",
+    "Divide hair into medium sections.",
+    "Twist each section tightly from root to end.",
+    "Secure ends with small elastics or pins.",
+    "Optionally, wrap twists around the head for a crown effect.",
+    "Loosen twists slightly for a soft look.",
+    "Spray lightly to finish."
+  ],
+   "Braided Side Pony":[
+    "Brush hair to remove tangles.",
+    "Gather hair to one side into a low ponytail.",
+    "Start a braid with the ponytail hair.",
+    "Secure the end with an elastic.",
+    "Optional: wrap braid around the base for decoration.",
+    "Adjust braid for neatness and volume.",
+    "Spray lightly to hold."
+  ],
+  "Braided Updo":[
+    "Brush hair thoroughly.",
+    "Divide hair into sections as desired.",
+    "Braid each section individually.",
+    "Pin braids up creatively to form an updo.",
+    "Tuck ends under braids and secure with pins.",
+    "Adjust braids to balance volume and shape.",
+    "Finish with hairspray."
+  ],
+  "Mermaid Twist":[
+    "Brush hair to remove tangles.",
+    "Divide hair into medium sections.",
+    "Twist each section tightly from root to ends.",
+    "Optionally combine sections into one large braid for a mermaid effect.",
+    "Secure ends with elastics.",
+    "Loosen twists slightly for a soft, flowing look.",
+    "Spray lightly to hold."
+  ],
+  "Crown Fishtail":[
+    "Brush hair thoroughly.",
+    "Part hair around the crown for a circular fishtail braid.",
+    "Divide hair into two main sections.",
+    "Take a small outer strand from one section and cross over to the other.",
+    "Continue fishtail braiding around the head in a crown shape.",
+    "Tuck and pin the ends under the starting point.",
+    "Adjust braid thickness and finish with hairspray."
+  ],
+  "Lace Crown":[
+    "Brush hair and part horizontally along the crown.",
+    "Pick three strands at the front to start a French lace braid.",
+    "Add hair from one side only as you braid around the head.",
+    "Continue until you reach the other side of the head.",
+    "Tuck the end and secure with pins.",
+    "Loosen slightly for volume and spray lightly."
+  ],
+  "Mini Braids":[
+    "Brush hair thoroughly.",
+    "Divide hair into small sections for mini braids.",
+    "Braid each section tightly from root to end.",
+    "Secure ends with small elastics.",
+    "Optional: gently pancake braids for volume.",
+    "Arrange braids as desired.",
+    "Spray lightly to hold."
+  ],
+  "Braided Bun Crown":[
+    "Brush hair and part around the crown.",
+    "Create a braid starting at one side and going around the head.",
+    "Wrap the braid into a bun on top or around the crown.",
+    "Secure ends with pins.",
+    "Adjust the bun and braid for symmetry and volume.",
+    "Gently pull sections for a soft, full look.",
+    "Spray lightly to finish."
+  ],
+   "Defined Ringlets":[
+    "Wash and condition your hair thoroughly.",
+    "Apply a curl-enhancing cream or gel evenly.",
+    "Section hair into small parts.",
+    "Twist each section around your finger to define curls.",
+    "Allow curls to air dry or use a diffuser.",
+    "Separate curls gently once dry for volume.",
+    "Apply light hairspray if needed to hold."
+  ],
+  "Soft Beach Curls":[
+    "Start with damp hair and apply a texturizing spray.",
+    "Divide hair into medium sections.",
+    "Use a curling wand to create loose waves.",
+    "Twist strands away from the face for a natural look.",
+    "Run fingers through curls to soften them.",
+    "Finish with sea salt spray for beachy texture."
+  ],
+  "Curly Bob":[
+    "Apply curl cream to damp hair.",
+    "Part hair as desired.",
+    "Use a diffuser to dry hair while scrunching.",
+    "Define any curls with a curling wand if needed.",
+    "Tweak shape to frame the face nicely.",
+    "Finish with light shine serum."
+  ],
+  "Voluminous Curls":[
+    "Wash and condition hair.",
+    "Apply volumizing mousse at roots.",
+    "Section hair and twist curls with a wand.",
+    "Lift roots while drying for volume.",
+    "Separate curls gently for fullness.",
+    "Spray light hairspray to hold shape."
+  ],
+  "Finger Coils":[
+    "Apply leave-in conditioner to damp hair.",
+    "Section hair into small parts.",
+    "Wrap each section around your finger to form coils.",
+    "Allow hair to air dry or diffuse on low heat.",
+    "Separate coils slightly for desired look.",
+    "Use light oil to reduce frizz."
+  ],
+  "Wash and Go":[
+    "Wash and condition hair thoroughly.",
+    "Apply a curl-defining gel or cream evenly.",
+    "Comb through with fingers to detangle.",
+    "Scrunch hair gently from ends to roots.",
+    "Allow hair to air dry or diffuse carefully.",
+    "Separate curls slightly for volume once dry."
+  ],
+  "Loose Curls":[
+    "Start with damp hair and apply curl mousse.",
+    "Divide hair into sections.",
+    "Use a curling iron to create loose waves.",
+    "Twist sections lightly for soft curls.",
+    "Brush gently with wide-tooth comb for natural look.",
+    "Apply finishing spray for hold."
+  ],
+  "Tight Curls":[
+    "Wash and condition hair thoroughly.",
+    "Apply curl cream to damp hair.",
+    "Section hair into small pieces.",
+    "Twist each section tightly around finger or small wand.",
+    "Allow to air dry or use diffuser on low heat.",
+    "Separate gently if needed, and apply light oil to shine."
+  ],
+  "Spiral Curls":[
+    "Apply curl-defining cream to damp hair.",
+    "Divide hair into small sections.",
+    "Wrap each section around a spiral curling wand.",
+    "Hold for a few seconds and release.",
+    "Repeat for all sections.",
+    "Spray light hairspray to maintain shape."
+  ],
+  "Curly Ponytail":[
+    "Gather hair into a high, mid, or low ponytail.",
+    "Secure with an elastic.",
+    "Define curls in the ponytail with a wand or finger twists.",
+    "Pull small front sections for face-framing curls.",
+    "Add hair spray lightly to hold style."
+  ],
+  "Curly Half-Up":[
+    "Brush hair lightly to remove tangles.",
+    "Take the top half of your hair and gather it.",
+    "Secure with an elastic or clip at the back of your head.",
+    "Define curls in the half-up section using fingers or a wand.",
+    "Leave bottom half loose and voluminous.",
+    "Spray lightly for hold."
+  ],
+  "Curly Top Knot":[
+    "Gather all hair at the crown of your head.",
+    "Twist hair and wrap into a top knot.",
+    "Secure with pins or elastic.",
+    "Define curls sticking out for a soft look.",
+    "Tug gently to create volume.",
+    "Apply hairspray to hold."
+  ],
+  "Messy Curls":[
+    "Apply curl cream to damp hair.",
+    "Scrunch hair with hands to create loose curls.",
+    "Dry with diffuser or air dry.",
+    "Separate curls lightly with fingers.",
+    "Shake hair for a tousled effect.",
+    "Set with a flexible hairspray."
+  ],
+  "Side Swept Curls":[
+    "Part hair deeply to one side.",
+    "Curl all hair using a wand or diffuser.",
+    "Sweep hair over one shoulder.",
+    "Secure loosely with pins if necessary.",
+    "Adjust curls for softness.",
+    "Apply finishing spray."
+  ],
+  "Boho Curls":[
+    "Apply texturizing spray to damp hair.",
+    "Create loose curls with wand or braids overnight.",
+    "Mess up curls slightly for a relaxed look.",
+    "Add small twists at the front if desired.",
+    "Lightly separate curls for fullness.",
+    "Finish with a light hairspray."
+  ],
+  "Curly Bob with Bangs":[
+    "Apply curl cream evenly on damp hair.",
+    "Define bangs with curling wand or fingers.",
+    "Dry with diffuser while scrunching curls.",
+    "Separate curls to frame the face.",
+    "Tweak shape for balance.",
+    "Apply light serum for shine."
+  ],
+  "Layered Curls":[
+    "Wash and condition hair.",
+    "Apply curl-enhancing product.",
+    "Section hair and curl each layer with wand or fingers.",
+    "Focus on lifting top layers for volume.",
+    "Separate curls gently for fullness.",
+    "Finish with flexible hairspray."
+  ],
+  "Curly Mohawk":[
+    "Section hair to create a mohawk style.",
+    "Curl middle section using wand or diffuser.",
+    "Tighten sides with braids or slick gel.",
+    "Lift curls for volume in the center.",
+    "Secure style with pins if needed.",
+    "Apply hairspray to maintain shape."
+  ],
+  "Twist Out":[
+    "Wash and detangle hair.",
+    "Section hair into small parts.",
+    "Twist each section tightly with fingers or small braids.",
+    "Allow hair to dry completely.",
+    "Untwist carefully for defined curls.",
+    "Separate curls for volume and spray lightly."
+  ],
+  "Bantu Knots":[
+    "Section hair into small square parts.",
+    "Twist each section around itself and wrap into a small knot.",
+    "Secure with bobby pins or elastics.",
+    "Allow hair to dry completely.",
+    "Unravel knots carefully to reveal curls.",
+    "Separate and shape curls as desired."
+  ],
+ "Halo Curls":[
+    "Part hair in the middle or slightly to the side.",
+    "Take two small sections near the temples.",
+    "Twist each section gently and pin around the crown to form a halo.",
+    "Define curls in the remaining hair using fingers or a wand.",
+    "Adjust halo twists to sit neatly.",
+    "Spray lightly for hold."
+  ],
+  "Frohawk":[
+    "Part the sides of hair and secure them tightly.",
+    "Leave the middle section free.",
+    "Define curls in the middle section with curl cream or wand.",
+    "Lift the middle curls for height and volume.",
+    "Pin sides close to scalp if necessary.",
+    "Finish with hairspray for hold."
+  ],
+  "Curly Bob Low Pony":[
+    "Gather hair at the nape of the neck.",
+    "Secure loosely with an elastic.",
+    "Define curls that fall over the shoulders.",
+    "Separate curls for a natural look.",
+    "Tweak volume around the face.",
+    "Set with light hairspray."
+  ],
+  "Bubble Curls":[
+    "Gather hair into a high ponytail.",
+    "Add elastics every few inches to create bubbles.",
+    "Gently pull sections between elastics to puff them out.",
+    "Define curls at the end of the ponytail.",
+    "Adjust bubbles for symmetry.",
+    "Spray lightly for hold."
+  ],
+  "French Curly Twist":[
+    "Part hair at the crown.",
+    "Take a front section and twist it backward along the scalp.",
+    "Add more hair from the sides as you twist.",
+    "Continue twisting to the nape.",
+    "Secure with an elastic or pin.",
+    "Let remaining curls fall naturally and spray lightly."
+  ],
+  "Side Curly Twist":[
+    "Part hair to one side.",
+    "Take a small front section and twist along the side of the head.",
+    "Pin twist securely at the back.",
+    "Define remaining curls with fingers or wand.",
+    "Adjust volume and curl shape.",
+    "Finish with a light hairspray."
+  ],
+  "Crown Curly":[
+    "Part hair in a way that suits your face.",
+    "Create a loose braid or twist along the crown.",
+    "Pin securely, leaving curls flowing below.",
+    "Separate curls for fullness.",
+    "Tweak crown braid or twist to sit evenly.",
+    "Spray lightly to hold style."
+  ],
+  "Infinity Curls":[
+    "Divide hair into two main sections.",
+    "Twist each section in opposite directions around the head.",
+    "Pin ends to create an infinity loop effect.",
+    "Define remaining curls with curl cream or wand.",
+    "Adjust loops to be symmetrical.",
+    "Set with light hairspray."
+  ],
+  "Double Twist Out":[
+    "Wash and detangle hair.",
+    "Divide hair into sections and twist two strands together.",
+    "Let hair dry completely.",
+    "Untwist carefully for defined double curls.",
+    "Separate curls for volume.",
+    "Spray lightly to finish."
+  ],
+  "Curly Space Buns":[
+    "Part hair down the middle into two sections.",
+    "Gather each section into a high ponytail.",
+    "Twist each ponytail and wrap into a bun.",
+    "Secure with elastics or pins.",
+    "Pull out curls slightly for a playful look.",
+    "Spray lightly for hold."
+  ],
+ "Top Knot Curls":[
+    "Gather all hair into a high ponytail at the crown.",
+    "Twist the ponytail and wrap it around the base to form a top knot.",
+    "Secure with pins or an elastic.",
+    "Pull out a few curls for a softer look.",
+    "Adjust the shape of the knot for balance.",
+    "Spray lightly to hold the curls in place."
+  ],
+  "Low Bun Curls":[
+    "Gather hair at the nape of the neck.",
+    "Twist or braid loosely and wrap into a low bun.",
+    "Secure with pins or an elastic.",
+    "Define curls that frame the face.",
+    "Loosen bun slightly for volume.",
+    "Finish with light hairspray."
+  ],
+  "Curly Fishtail":[
+    "Brush hair and divide into two sections.",
+    "Take small outer strands from each section and cross them over to the opposite section.",
+    "Continue down the length of the hair.",
+    "Secure with an elastic.",
+    "Gently pull on braid for volume.",
+    "Spray lightly to set."
+  ],
+  "Side Rope Curls":[
+    "Part hair to the side you prefer.",
+    "Divide a front section into two strands and twist them around each other (rope braid).",
+    "Secure twist with pin or elastic at the end.",
+    "Let the remaining curls flow naturally.",
+    "Adjust thickness of twist if needed.",
+    "Use hairspray to hold."
+  ],
+  "Mini Twists":[
+    "Divide hair into small sections.",
+    "Twist each section tightly from root to tip.",
+    "Continue until all hair is twisted.",
+    "Separate twists gently for volume if desired.",
+    "Define ends of twists.",
+    "Spray lightly for hold."
+  ],
+  "Curly Pony Wrap":[
+    "Gather hair into a high or low ponytail.",
+    "Take a small section from the ponytail and twist or braid it.",
+    "Wrap the braid/twist around the elastic to hide it.",
+    "Secure with pins underneath.",
+    "Adjust curls for volume and symmetry.",
+    "Spray lightly to finish."
+  ],
+  "Side Bubble Curls":[
+    "Part hair to the side.",
+    "Create a side ponytail.",
+    "Add elastics every few inches to form bubbles.",
+    "Gently pull sections to puff out.",
+    "Define curls at the ends.",
+    "Spray lightly for hold."
+  ],
+  "Twist Out Half-Up":[
+    "Divide hair into sections and twist each section.",
+    "Allow twists to dry completely.",
+    "Untwist carefully to reveal defined curls.",
+    "Gather the top half of hair into a half-up style.",
+    "Leave the rest of curls loose.",
+    "Spray lightly to maintain shape."
+  ],
+  "French Twist Out":[
+    "Twist small sections of hair from front to back.",
+    "Allow hair to set or dry.",
+    "Carefully unravel twists for defined curls.",
+    "Adjust curl shape with fingers.",
+    "Smooth hair around the face if needed.",
+    "Finish with light hairspray."
+  ],
+  "Halo Twist Out":[
+    "Create twists along the hairline forming a halo pattern.",
+    "Let twists dry or set completely.",
+    "Carefully untwist for defined curls.",
+    "Adjust halo twists for symmetry.",
+    "Separate curls for fullness.",
+    "Spray lightly to hold style."
+  ],
+    "Hollywood Waves":[
+    "Start with clean, dry hair.",
+    "Apply heat protectant throughout the hair.",
+    "Use a large-barrel curling iron to create loose waves.",
+    "Curl hair away from the face in sections.",
+    "Brush out curls gently for soft waves.",
+    "Set with light hairspray for hold."
+  ],
+  "Straight Silk Press":[
+    "Wash and condition hair thoroughly.",
+    "Blow-dry hair completely.",
+    "Apply heat protectant and serum for shine.",
+    "Use a flat iron in small sections from root to tip.",
+    "Brush hair smoothly to blend sections.",
+    "Finish with a shine spray or light hairspray."
+  ],
+  "Layered Long Cut":[
+    "Brush hair thoroughly to remove tangles.",
+    "Decide on the length of layers.",
+    "Cut sections at different lengths to create layers.",
+    "Blend layers with scissors for smooth transitions.",
+    "Style with a round brush and blow-dryer for volume.",
+    "Apply serum or light hairspray for finish."
+  ],
+  "Boho Waves":[
+    "Start with dry or slightly damp hair.",
+    "Apply texturizing spray or sea salt spray.",
+    "Braid hair loosely in multiple sections.",
+    "Leave braids in for several hours or overnight.",
+    "Undo braids and finger-comb waves.",
+    "Spray lightly to hold the boho texture."
+  ],
+  "Glass Hair":[
+    "Wash and condition hair thoroughly.",
+    "Blow-dry hair straight using a paddle brush.",
+    "Apply heat protectant serum.",
+    "Use a flat iron in small sections for sleek shine.",
+    "Smooth hair with a finishing serum.",
+    "Ensure all strands are sleek and glossy."
+  ],
+  "Loose Waves":[
+    "Start with clean, dry hair.",
+    "Section hair into medium sections.",
+    "Use a curling wand or iron to curl each section loosely.",
+    "Curl away from the face.",
+    "Brush gently to loosen curls into waves.",
+    "Finish with light hairspray."
+  ],
+  "Curly Long Hair":[
+    "Start with damp hair and apply curl cream.",
+    "Section hair and twist small sections for definition.",
+    "Allow hair to air dry or use a diffuser.",
+    "Separate curls gently for volume.",
+    "Define curls with fingers or small comb.",
+    "Spray lightly to maintain shape."
+  ],
+  "High Pony Long":[
+    "Brush hair thoroughly to remove tangles.",
+    "Gather hair high on the crown.",
+    "Secure with a strong elastic band.",
+    "Wrap a small section of hair around the elastic to hide it.",
+    "Adjust ponytail for balance and smoothness.",
+    "Spray lightly for hold."
+  ],
+  "Low Pony Long":[
+    "Brush hair to remove knots.",
+    "Part hair in the center or side as preferred.",
+    "Gather hair at the nape of the neck.",
+    "Secure with an elastic band.",
+    "Wrap a small section of hair around the band for a polished look.",
+    "Adjust and spray lightly."
+  ],
+  "Bubble Pony Long":[
+    "Gather hair into a high or mid-level ponytail.",
+    "Add elastic bands every few inches down the ponytail.",
+    "Gently pull each section between elastics to form bubbles.",
+    "Adjust volume and symmetry of bubbles.",
+    "Define curls at the ends if needed.",
+    "Spray lightly to hold style."
+  ],
+   "Side Swept Long":[
+    "Brush hair thoroughly to remove tangles.",
+    "Part hair to the side you prefer.",
+    "Gather all hair over that shoulder.",
+    "Secure with pins behind the ear if needed.",
+    "Curl or wave ends for added texture.",
+    "Finish with light hairspray."
+  ],
+  "Twisted Long Hair":[
+    "Start with detangled hair.",
+    "Take small sections from each side of the face.",
+    "Twist sections away from the face.",
+    "Join twists at the back and secure with pins or elastic.",
+    "Repeat on other side if desired.",
+    "Set with hairspray for hold."
+  ],
+  "Braided Long Hair":[
+    "Brush hair thoroughly.",
+    "Decide on braid style (French, Dutch, or simple).",
+    "Divide hair into sections for braiding.",
+    "Braid each section carefully to the ends.",
+    "Secure with elastic bands.",
+    "Loosen braid gently for volume and style."
+  ],
+  "Top Knot Long":[
+    "Brush hair to remove tangles.",
+    "Gather hair into a high ponytail.",
+    "Twist ponytail and wrap around base to form a knot.",
+    "Secure with pins and elastics.",
+    "Adjust for symmetry and neatness.",
+    "Spray lightly for hold."
+  ],
+  "Crown Long Hair":[
+    "Brush hair thoroughly.",
+    "Part hair in the center or side.",
+    "Create braids or twists along the hairline on both sides.",
+    "Wrap braids around the crown to meet at the back.",
+    "Pin ends securely underneath.",
+    "Finish with hairspray."
+  ],
+  "Messy Long Hair":[
+    "Start with clean or slightly tousled hair.",
+    "Apply texturizing spray or sea salt spray.",
+    "Scrunch hair with fingers for natural waves.",
+    "Pull some strands loosely around the face.",
+    "Add small twists or knots if desired.",
+    "Finish with hairspray for texture."
+  ],
+  "Side Bubble Long":[
+    "Part hair to one side.",
+    "Gather hair into a low side ponytail.",
+    "Add elastics every few inches down the ponytail.",
+    "Gently pull each section to form bubbles.",
+    "Adjust for symmetry and volume.",
+    "Spray lightly to hold style."
+  ],
+  "Infinity Long":[
+    "Brush hair thoroughly.",
+    "Take a small section from the crown.",
+    "Twist or braid sections to create a continuous looping pattern down the hair.",
+    "Secure with elastics or pins as needed.",
+    "Adjust loops for symmetry and volume.",
+    "Finish with hairspray."
+  ],
+  "Half-Up Long":[
+    "Brush hair to remove tangles.",
+    "Take the top half of your hair from temple to temple.",
+    "Secure with a clip or elastic at the back.",
+    "Leave the rest of the hair flowing freely.",
+    "Add curls or waves for style.",
+    "Finish with hairspray for hold."
+  ],
+  "Low Bun Long":[
+    "Brush hair thoroughly.",
+    "Gather hair at the nape of the neck.",
+    "Twist hair into a low bun.",
+    "Secure with pins or elastic.",
+    "Loosen slightly for a softer look.",
+    "Spray lightly to hold style."
+  ],
+   "Side Bun Long":[
+    "Brush hair thoroughly.",
+    "Part hair to your preferred side.",
+    "Gather hair to the side and twist into a bun near the nape.",
+    "Secure with pins or an elastic.",
+    "Loosen slightly for a soft, casual look.",
+    "Finish with hairspray."
+  ],
+  "Twist Long Hair":[
+    "Brush hair to remove tangles.",
+    "Take two small sections from the front of your hair.",
+    "Twist sections away from your face.",
+    "Join twists at the back and secure with pins or an elastic.",
+    "Add additional twists along the sides if desired.",
+    "Set with hairspray."
+  ],
+  "Fishtail Long":[
+    "Brush hair thoroughly.",
+    "Divide hair into two equal sections.",
+    "Take a small strand from the outside of the left section and cross over to the right.",
+    "Take a small strand from the outside of the right section and cross over to the left.",
+    "Repeat until you reach the ends.",
+    "Secure with elastic and gently loosen for volume."
+  ],
+  "Dutch Braid Long":[
+    "Detangle hair completely.",
+    "Part hair as desired.",
+    "Take three sections at the crown.",
+    "Cross outer strands UNDER the middle section.",
+    "Add small sections of hair from scalp as you braid down.",
+    "Continue to the ends and secure with elastic."
+  ],
+  "French Braid Long":[
+    "Brush hair to remove tangles.",
+    "Divide hair into three sections at the crown.",
+    "Cross right section over middle, then left over middle.",
+    "Add small strands from scalp as you continue.",
+    "Finish at the nape and braid to ends.",
+    "Secure with elastic and loosen gently."
+  ],
+  "Halo Long":[
+    "Brush hair thoroughly.",
+    "Start a braid or twist near one temple.",
+    "Braid/twist around the hairline in a circular fashion.",
+    "Continue until you meet the starting point.",
+    "Tuck ends under and secure with pins.",
+    "Spray lightly for hold."
+  ],
+  "Side Top Knot Long":[
+    "Brush hair thoroughly.",
+    "Part hair to one side.",
+    "Gather hair at the top of the side into a ponytail.",
+    "Twist into a top knot.",
+    "Secure with pins and elastics.",
+    "Adjust for symmetry and finish with hairspray."
+  ],
+  "Double Braid Long":[
+    "Brush hair thoroughly.",
+    "Divide hair into two equal sections.",
+    "Braid each section from root to ends.",
+    "Secure with elastics.",
+    "Gently loosen braids for volume.",
+    "Set with hairspray."
+  ],
+  "Layered Waves Long":[
+    "Brush hair to remove tangles.",
+    "Apply heat protectant if using styling tools.",
+    "Curl hair in sections to create waves.",
+    "Layer waves by curling alternating directions.",
+    "Run fingers through hair for softness.",
+    "Finish with hairspray."
+  ],
+  "Curly Top Knot Long":[
+    "Brush hair and define curls.",
+    "Gather hair into a high ponytail at the crown.",
+    "Twist ponytail into a top knot.",
+    "Secure with pins and elastics.",
+    "Loosen curls around the face for softness.",
+    "Set with hairspray."
+  ],
+  "Mini Buns Long":[
+    "Brush hair thoroughly.",
+    "Divide hair into small sections.",
+    "Twist each section into a mini bun.",
+    "Secure with small elastics or pins.",
+    "Adjust for symmetry and spacing.",
+    "Spray lightly to hold style."
+  ],
+  "Side Twists Long":[
+    "Brush hair thoroughly.",
+    "Take small sections from the front on each side.",
+    "Twist sections away from the face.",
+    "Secure at the back with pins or a small elastic.",
+    "Repeat for additional twists along the sides if desired.",
+    "Finish with hairspray."
+  ],
+  "Braided Half-Up Long":[
+    "Brush hair thoroughly.",
+    "Take top half of hair from temple to temple.",
+    "Create a braid or twist with this section.",
+    "Secure at the back with pins or elastic.",
+    "Leave remaining hair flowing freely.",
+    "Spray lightly for hold."
+  ],
+"Messy Bun":[
+    "Brush hair thoroughly to remove tangles.",
+    "Gather hair loosely at the crown or nape.",
+    "Twist hair into a loose bun.",
+    "Secure with pins or an elastic.",
+    "Pull out a few strands around the face for softness.",
+    "Finish with hairspray for hold."
+  ],
+  "Low Chignon":[
+    "Brush hair to remove tangles.",
+    "Gather hair at the nape of the neck.",
+    "Twist hair inward to form a chignon.",
+    "Secure with pins.",
+    "Tuck ends neatly under the bun.",
+    "Set with hairspray."
+  ],
+  "Top Knot":[
+    "Brush hair thoroughly.",
+    "Gather all hair into a high ponytail at the crown.",
+    "Twist the ponytail into a knot.",
+    "Secure with elastics and pins as needed.",
+    "Adjust for symmetry.",
+    "Spray lightly to hold."
+  ],
+  "Ballerina Bun":[
+    "Brush hair and gather into a high ponytail.",
+    "Twist ponytail tightly and wrap around the base.",
+    "Secure with pins for a neat, round shape.",
+    "Smooth all flyaways.",
+    "Use hairspray to set.",
+    "Add a bun cover if desired."
+  ],
+  "Braided Bun":[
+    "Brush hair to remove tangles.",
+    "Create a braid from a ponytail at your preferred height.",
+    "Wrap the braid around the base to form a bun.",
+    "Secure with pins.",
+    "Loosen braid gently if desired.",
+    "Finish with hairspray."
+  ],
+  "Twisted Bun":[
+    "Brush hair thoroughly.",
+    "Divide hair into two or more sections.",
+    "Twist each section and wrap around the base.",
+    "Secure with pins or elastics.",
+    "Adjust for volume and symmetry.",
+    "Spray lightly for hold."
+  ],
+  "Knotted Bun":[
+    "Brush hair to remove tangles.",
+    "Gather hair into a ponytail.",
+    "Tie hair into a loose knot and wrap remaining hair around it.",
+    "Secure with pins.",
+    "Pull a few strands for softness if desired.",
+    "Set with hairspray."
+  ],
+  "High Bun":[
+    "Brush hair thoroughly.",
+    "Gather hair into a high ponytail at the crown.",
+    "Twist hair into a bun and secure with pins/elastics.",
+    "Smooth edges for a polished look.",
+    "Adjust for symmetry.",
+    "Finish with hairspray."
+  ],
+  "Half-Up Bun":[
+    "Brush hair thoroughly.",
+    "Take the top half of your hair from temples to crown.",
+    "Twist this section into a bun.",
+    "Secure with pins or small elastic.",
+    "Leave remaining hair down.",
+    "Spray lightly for hold."
+  ],
+  "Side Bun":[
+    "Brush hair to remove tangles.",
+    "Part hair to your preferred side.",
+    "Gather hair at the side near the nape or temple.",
+    "Twist into a bun and secure with pins.",
+    "Adjust for softness and symmetry.",
+    "Finish with hairspray."
+  ],
+  "Double Bun":[
+    "Brush hair to remove tangles.",
+    "Part hair down the middle into two equal sections.",
+    "Create a high or low bun on each side.",
+    "Secure each bun with pins or elastics.",
+    "Adjust for symmetry and volume.",
+    "Spray lightly for hold."
+  ],
+  "Braided Top Knot":[
+    "Brush hair thoroughly.",
+    "Gather hair into a high ponytail at the crown.",
+    "Braid the ponytail tightly.",
+    "Wrap the braid into a top knot.",
+    "Secure with pins and elastics.",
+    "Finish with hairspray."
+  ],
+  "Low Messy Bun":[
+    "Brush hair to remove tangles.",
+    "Gather hair loosely at the nape of the neck.",
+    "Twist hair into a messy bun.",
+    "Secure with pins or a loose elastic.",
+    "Pull out a few strands for a soft look.",
+    "Spray lightly to hold."
+  ],
+  "Crown Bun":[
+    "Brush hair thoroughly.",
+    "Part hair evenly around the head.",
+    "Twist sections of hair along the hairline to form a crown.",
+    "Pin the twisted sections together at the back.",
+    "Tuck in ends neatly and secure with pins.",
+    "Finish with hairspray."
+  ],
+  "Bubble Bun":[
+    "Brush hair thoroughly.",
+    "Gather hair into a high ponytail.",
+    "Add elastics every few inches down the ponytail to create bubbles.",
+    "Gently pull sections between elastics to puff them.",
+    "Twist the ponytail into a bun shape if desired.",
+    "Secure with pins and spray lightly."
+  ],
+  "French Twist Bun":[
+    "Brush hair to remove tangles.",
+    "Gather hair at the nape of the neck.",
+    "Twist hair upward and tuck ends inside.",
+    "Secure with pins along the twist.",
+    "Smooth the front and sides for a polished look.",
+    "Finish with hairspray."
+  ],
+  "Dutch Twist Bun":[
+    "Brush hair thoroughly.",
+    "Take a section from one side and twist it under towards the back.",
+    "Continue twisting along the back and tuck ends into a bun.",
+    "Secure with pins.",
+    "Adjust twist for evenness.",
+    "Spray lightly to hold."
+  ],
+  "Infinity Bun":[
+    "Brush hair to remove tangles.",
+    "Divide hair into two sections.",
+    "Twist each section in opposite directions.",
+    "Wrap the twists together into a circular bun shape.",
+    "Secure with pins or elastics.",
+    "Finish with hairspray."
+  ],
+  "Boho Bun":[
+    "Brush hair thoroughly.",
+    "Gather hair loosely at the desired height.",
+    "Twist or braid sections of hair and wrap around the base for a boho look.",
+    "Secure with pins.",
+    "Pull out some strands for softness.",
+    "Spray lightly for hold."
+  ],
+  "Goddess Bun":[
+    "Brush hair thoroughly.",
+    "Part hair into several sections.",
+    "Twist or braid each section and wrap into a bun.",
+    "Pin each section securely.",
+    "Loosen slightly for volume.",
+    "Finish with hairspray."
+  ],
+   "Mini Bun":[
+    "Brush hair thoroughly.",
+    "Take a small section of hair from any part of your head.",
+    "Twist or braid the section if desired.",
+    "Wrap it into a mini bun and secure with pins.",
+    "Repeat for multiple mini buns if desired.",
+    "Finish with light hairspray."
+  ],
+  "Curly Bun":[
+    "Brush hair gently to remove tangles but maintain curls.",
+    "Gather hair into a loose bun at the desired height.",
+    "Secure with pins or elastic.",
+    "Pull out some curls for softness around the face.",
+    "Adjust volume of the bun.",
+    "Set with hairspray to hold curls."
+  ],
+  "Side Swept Bun":[
+    "Brush hair thoroughly.",
+    "Gather hair to one side of your head.",
+    "Twist or braid loosely and wrap into a side bun.",
+    "Secure with pins.",
+    "Pull out a few strands for a soft, romantic look.",
+    "Spray lightly for hold."
+  ],
+  "Twist Bun":[
+    "Brush hair to remove tangles.",
+    "Divide hair into sections.",
+    "Twist each section and wrap into a bun shape.",
+    "Secure twists with pins.",
+    "Adjust for symmetry and volume.",
+    "Finish with hairspray."
+  ],
+  "Fishtail Bun":[
+    "Brush hair thoroughly.",
+    "Gather hair into a ponytail and braid it into a fishtail.",
+    "Wrap the fishtail braid into a bun.",
+    "Secure with pins or elastics.",
+    "Loosen braid slightly for volume.",
+    "Spray lightly to finish."
+  ],
+  "Rope Bun":[
+    "Brush hair to remove tangles.",
+    "Divide hair into two sections.",
+    "Twist each section tightly.",
+    "Twist both sections around each other into a bun shape.",
+    "Secure with pins or elastic.",
+    "Finish with hairspray."
+  ],
+  "Double Top Knot":[
+    "Brush hair thoroughly.",
+    "Divide hair into two equal sections at the top of your head.",
+    "Twist or braid each section.",
+    "Wrap each into a top knot and secure with pins or elastics.",
+    "Adjust for symmetry.",
+    "Spray lightly for hold."
+  ],
+  "Side Bubble Bun":[
+    "Brush hair thoroughly.",
+    "Gather hair into a side ponytail.",
+    "Add elastics every few inches to create bubbles.",
+    "Twist the ponytail into a bun shape.",
+    "Secure with pins.",
+    "Spray lightly for hold."
+  ],
+  "Half-Braided Bun":[
+    "Brush hair thoroughly.",
+    "Braid a section of hair from the front or top.",
+    "Gather the rest of the hair into a bun.",
+    "Wrap the braid around or into the bun and secure with pins.",
+    "Adjust for volume and symmetry.",
+    "Finish with hairspray."
+  ],
+  "Halo Bun":[
+    "Brush hair thoroughly.",
+    "Part hair evenly around the head.",
+    "Twist or braid sections along the hairline to form a halo shape.",
+    "Wrap the ends into a bun shape and secure with pins.",
+    "Adjust for neatness and symmetry.",
+    "Finish with hairspray."
+  ],
+  "Infinity Twist Knot":[
+    "Brush hair thoroughly to remove any tangles.",
+    "Part hair as desired and gather a section from the top or side.",
+    "Divide the section into two parts and twist them around each other.",
+    "Continue twisting while adding small sections of hair from the scalp for the infinity effect.",
+    "Wrap the twisted section into a knot or bun shape and secure with pins.",
+    "Tuck in any loose ends neatly.",
+    "Adjust for symmetry and volume.",
+    "Set with hairspray for hold and shine."
+  ],
+  "Pixie Cut":[
+    "Wash and condition your hair thoroughly.",
+    "Towel dry hair until damp.",
+    "Comb hair to detangle completely.",
+    "Section hair if necessary to manage layers.",
+    "Use scissors or clippers to trim to desired pixie length.",
+    "Blend sides and back for a smooth finish.",
+    "Style with light mousse or wax for texture.",
+    "Adjust bangs or front layers as desired.",
+    "Set with hairspray if needed."
+  ],
+  "Textured Crop":[
+    "Wash and towel dry hair.",
+    "Comb through to remove knots.",
+    "Section hair for even cutting.",
+    "Use scissors to create a choppy, textured look.",
+    "Add layers to enhance movement.",
+    "Check symmetry and evenness.",
+    "Apply styling cream or pomade for texture.",
+    "Tousle hair with fingers for a casual look.",
+    "Finish with a light hold hairspray."
+  ],
+  "French Bob":[
+    "Wash and towel dry hair.",
+    "Comb hair straight to check length.",
+    "Cut hair to chin or jawline length.",
+    "Trim bangs straight or slightly rounded.",
+    "Add subtle layering for softness.",
+    "Check balance on both sides.",
+    "Style with a flat iron for smooth finish.",
+    "Apply shine serum or light mousse.",
+    "Set with hairspray for hold."
+  ],
+  "Buzz Cut":[
+    "Wash and towel dry hair.",
+    "Decide on clipper guard length.",
+    "Use clippers to shave all hair evenly.",
+    "Check for missed spots and even out.",
+    "Clean edges around ears and neck.",
+    "Apply moisturizer or scalp lotion.",
+    "Style is natural — no additional products needed.",
+    "Maintain regularly with clippers.",
+    "Enjoy the low-maintenance look."
+  ],
+  "Layered Short Cut":[
+    "Wash and towel dry hair.",
+    "Comb hair thoroughly.",
+    "Section hair for layers.",
+    "Cut the top layers slightly shorter than bottom layers.",
+    "Blend edges for smooth transition.",
+    "Check symmetry across the head.",
+    "Style with texturizing cream or wax.",
+    "Add volume by lifting hair while blow-drying.",
+    "Finish with light hairspray."
+  ],
+  "Asymmetrical Bob":[
+    "Wash and comb hair thoroughly.",
+    "Decide which side will be longer.",
+    "Cut hair shorter on one side, longer on the other.",
+    "Trim bangs or front layers to match style.",
+    "Blend ends for smooth transition.",
+    "Check balance and symmetry from all angles.",
+    "Style with a round brush or straightener.",
+    "Apply light serum for shine.",
+    "Set with hairspray for hold."
+  ],
+  "Short Curly Bob":[
+    "Wash and condition hair.",
+    "Towel dry and detangle carefully.",
+    "Cut hair to chin-length or desired bob.",
+    "Add layers to shape curls.",
+    "Define curls with curl cream or mousse.",
+    "Scrunch curls gently for volume.",
+    "Trim any uneven curls.",
+    "Apply light hairspray if needed.",
+    "Finish with a shine serum."
+  ],
+  "Side Swept Pixie":[
+    "Wash and towel dry hair.",
+    "Comb hair in desired direction.",
+    "Trim sides and back shorter, leaving top longer.",
+    "Style top to sweep to one side.",
+    "Blend edges for smoothness.",
+    "Apply light styling wax or pomade.",
+    "Adjust bangs to side-swept look.",
+    "Add volume by lifting roots with fingers.",
+    "Set with light hairspray."
+  ],
+  "Mini Bob":[
+    "Wash and detangle hair.",
+    "Comb straight to check length.",
+    "Cut hair short just above jawline.",
+    "Trim bangs to frame face if desired.",
+    "Add slight layering for shape.",
+    "Check symmetry and evenness.",
+    "Style with flat iron or round brush.",
+    "Apply shine serum.",
+    "Finish with light hairspray."
+  ],
+  "Messy Pixie":[
+    "Wash and towel dry hair.",
+    "Comb to detangle.",
+    "Cut hair short in pixie length.",
+    "Add choppy layers for texture.",
+    "Apply styling cream or wax.",
+    "Tousle hair with fingers for a messy look.",
+    "Check overall shape and balance.",
+    "Add more texture if needed.",
+    "Set with light hold hairspray."
+  ],
+  "Short Undercut":[
+    "Wash and towel dry hair.",
+    "Comb hair thoroughly.",
+    "Use clippers to shave the sides and back short.",
+    "Leave the top longer for styling.",
+    "Blend the top with the shaved sides if desired.",
+    "Style top with pomade or wax.",
+    "Create texture by tousling with fingers.",
+    "Adjust hairline and edges for neatness.",
+    "Set with light hairspray."
+  ],
+  "Stacked Bob":[
+    "Wash and towel dry hair.",
+    "Comb hair straight to check length.",
+    "Cut back layers short, stacking toward crown.",
+    "Trim front to jawline or desired length.",
+    "Blend layers for smooth transition.",
+    "Check symmetry and balance.",
+    "Style with a round brush or flat iron.",
+    "Apply shine serum for polish.",
+    "Finish with hairspray for hold."
+  ],
+  "Mini Pixie":[
+    "Wash and towel dry hair.",
+    "Comb hair thoroughly.",
+    "Trim hair very short, leaving minimal length on top.",
+    "Shape around ears and nape.",
+    "Add slight layers for texture if desired.",
+    "Apply styling wax for definition.",
+    "Tousle lightly for a casual look.",
+    "Check overall balance and edges.",
+    "Set with light hairspray."
+  ],
+  "Curly Crop":[
+    "Wash and condition hair.",
+    "Towel dry and detangle curls.",
+    "Cut hair short to crop length.",
+    "Add subtle layers for curl shape.",
+    "Define curls with curl cream or mousse.",
+    "Scrunch curls for volume.",
+    "Trim any uneven curls for shape.",
+    "Apply light hairspray for hold.",
+    "Finish with shine serum."
+  ],
+  "Short Layered Bob":[
+    "Wash and towel dry hair.",
+    "Comb hair straight.",
+    "Cut hair to bob length.",
+    "Add layers throughout for volume and texture.",
+    "Blend edges smoothly.",
+    "Check symmetry from all angles.",
+    "Style with round brush or straightener.",
+    "Apply light serum for shine.",
+    "Set with hairspray."
+  ],
+  "Short Afro":[
+    "Wash and condition hair.",
+    "Towel dry and detangle carefully.",
+    "Pick or comb hair to desired shape.",
+    "Trim hair evenly all around for shape.",
+    "Add height or roundness with comb/pick as desired.",
+    "Moisturize with leave-in cream.",
+    "Apply light styling cream to maintain shape.",
+    "Adjust edges if needed.",
+    "Finish with light hairspray or shine serum."
+  ]
+};
+
+
+
+
+
+/* ===== PLAYLIST ===== */
+const playlist = [
+  {name:"Chill Vibes 1", src:"chill1.mp3", img:"lofi_img.jpg"},
+  {name:"Chill Vibes 2", src:"chill2.mp3", img:"lofi1_img.jpg"},
+  {name:"Calm Loops", src:"chill3.mp3", img:"lofi2_img.jpg"},
+  {name:"Evening Chill", src:"chill4.mp3", img:"lofi3_img.webp"},
+  {name:"Morning Lofi", src:"chill5.mp3", img:"lofi4_img.jpg"},
+  {name:"Soft Beats", src:"chill6.mp3", img:"lofi5_img.jpg"},
+  {name:"Dream Waves", src:"chill7.mp3", img:"lofi6_img.webp"},
+  {name:"Late Night", src:"chill8.mp3", img:"lofi7_img.jpg"}
+];
+
+let currentTrack = 0;
+const player = document.getElementById("bg-music");
+
+/* ===== PARTICLES ===== */
+for(let i=0;i<40;i++){
+  const p=document.createElement("div");
+  p.className="particle";
+  p.style.left=Math.random()*100+"%";
+  p.style.animationDuration=6+Math.random()*8+"s";
+  particles.appendChild(p);
+}
+
+/* ===== INFO PANEL ===== */
+const grid = document.getElementById("hairstyles");
+const infoTitle = document.getElementById("info-title");
+const tools = document.getElementById("tools");
+const steps = document.getElementById("steps");
+const tips = document.getElementById("tips");
+const tutorialVideo = document.getElementById("tutorial-video"); // NEW: TikTok video container
+
+
+
+let currentStepIndex = 0;
+let currentHairstyle = null;
+
+
+/* ===== LOAD CATEGORY ===== */
+function loadCategory(cat){
+  grid.innerHTML="";
+  playlist.forEach(()=>{}); // clear music grid
+
+  hairData[cat].forEach(name=>{
+    const d=document.createElement("div");
+    d.className="hairstyle";
+
+    // Use manual image if exists
+    const imgSrc = hairImages[cat] && hairImages[cat][name]
+                   ? hairImages[cat][name]
+                   : `https://source.unsplash.com/400x400/?${name.replaceAll(" ","-")},hair`;
+
+    d.innerHTML=`<img src="${imgSrc}"><h3>${name}</h3>`;
+    d.onclick=()=>showInfo(name);
+    grid.appendChild(d);
+  });
+}
+
+/* ===== SHOW INFO ===== */
+function showInfo(name){
+  currentHairstyle = name;
+  currentStepIndex = 0;
+
+  infoTitle.textContent = name;
+  tools.textContent = "Comb, mirror, elastics";
+  tips.textContent = "Take your time — clean work looks best.";
+
+  if(hairstyleSteps[name] && hairstyleSteps[name].length > 0){
+    steps.textContent = hairstyleSteps[name][0];
+  } else {
+    steps.textContent = "No detailed steps yet.";
+  }
+}
+
+/* ===== NEXT STEP ===== */
+function nextStep(){
+  if(!currentHairstyle || !hairstyleSteps[currentHairstyle]) return;
+  if(currentStepIndex < hairstyleSteps[currentHairstyle].length - 1){
+    currentStepIndex++;
+    steps.textContent = hairstyleSteps[currentHairstyle][currentStepIndex];
+  } else {
+    steps.textContent = "✅ All steps completed!";
+  }
+}
+
+/* ===== HOME FUNCTION ===== */
+function goHome(){
+  infoTitle.textContent="Welcome ✨";
+  grid.innerHTML="";
+  playlist.forEach((track, i)=>{
+    const d = document.createElement("div");
+    d.className = "music-box";
+    d.innerHTML = `<img src="${track.img}"><div class="track-name">${track.name}</div>`;
+    d.onclick = () => {
+      currentTrack = i;
+      player.src = track.src;
+      player.play();
+    };
+    grid.appendChild(d);
+  });
+}
+
+/* ===== CATEGORY EVENTS ===== */
+document.querySelectorAll(".category").forEach(c=>{
+  c.onclick=()=>loadCategory(c.dataset.cat);
+});
+
+
+/* ===== INIT ===== */
+goHome();
+</script>
+</body>
+</html>
+<!-- ===== HELLO KITTY FLOATERS ===== -->
+<div id="hello-kitty-container" style="position:fixed; inset:0; pointer-events:none; z-index:9999;"></div>
+
+<script>
+const container = document.getElementById('hello-kitty-container');
+const kittyCount = 2; // or 3 if you want
+
+for (let i = 0; i < kittyCount; i++) {
+  const kitty = document.createElement('img');
+  kitty.src = "hello.jpg";
+  kitty.style.position = 'absolute';
+  kitty.style.width = '40px';
+  kitty.style.height = '40px';
+  kitty.style.left = Math.random() * 100 + '%';
+  kitty.style.top = Math.random() * 100 + '%';
+  kitty.style.pointerEvents = 'none';
+  kitty.style.opacity = 0.8;
+
+  // just a LITTLE slower than before
+  kitty.style.transition = 'left 7s linear, top 7s linear';
+
+  container.appendChild(kitty);
+
+  setInterval(() => {
+    kitty.style.left = Math.random() * 100 + '%';
+    kitty.style.top = Math.random() * 100 + '%';
+  }, 6000 + Math.random() * 2000); // was ~4–6s, now ~6–8s
+}
+</script>
+<h1 data-i18n="title"></h1>
+<h3 data-i18n="tools"></h3>
+<h3 data-i18n="steps"></h3>
+<h3 data-i18n="tips"></h3>
+<button data-i18n="next"></button>
+<div class="language-switch">
+  <button class="lang-btn" data-lang="en">EN</button>
+  <button class="lang-btn" data-lang="ar">AR</button>
+</div>
+
+const videoData = {
+  videos: [
+    {
+      title: "French Braid Tutorial",
+      url: "https://www.youtube.com/embed/VIDEO_ID1"
+    },
+    {
+      title: "Messy Bun Step-by-Step",
+      url: "https://www.youtube.com/embed/VIDEO_ID2"
+    },
+    {
+      title: "Curly Ponytail Styling",
+      url: "https://www.youtube.com/embed/VIDEO_ID3"
+    }
+    // Add as many as you want
+  ]
+};
+/* =========================
+   ULTRA CLEAN MOBILE MODE
+   ========================= */
+@media (max-width: 768px) {
+
+  body {
+    overflow-y: auto;
+  }
+
+  #app {
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* ===== COMPACT SIDEBAR ===== */
+  #sidebar {
+    flex-direction: row;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 10px;
+    background: rgba(0,0,0,0.55);
+    overflow-x: auto;
+  }
+
+  #sidebar h2 {
+    display: none;
+  }
+
+  .sidebar-btn {
+    font-size: 14px;              /* smaller text */
+    padding: 10px 12px;           /* compact */
+    border-radius: 999px;         /* pill shape */
+    min-width: auto;
+    line-height: 1;
+  }
+
+  /* Invisible tap area boost (big fingers, small UI) */
+  .sidebar-btn::after {
+    content: "";
+    position: absolute;
+    inset: -6px;
+  }
+
+  /* ===== MAIN CONTENT ===== */
+  #content {
+    padding: 10px;
+  }
+
+  #hairstyles {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+  }
+
+  .hairstyle {
+    padding: 10px;
+    border-radius: 16px;
+  }
+
+  .hairstyle img {
+    height: 155px;
+  }
+
+  /* ===== INFO PANEL AS FLOATING CARD ===== */
+  #info-panel {
+    margin: 10px;
+    padding: 14px;
+    border-radius: 20px;
+    background: rgba(255,255,255,0.12);
+  }
+
+  #info-title {
+    font-size: 22px;
+  }
+
+  .section-title {
+    font-size: 17px;
+  }
+
+  .section-text {
+    font-size: 15px;
+    line-height: 1.6;
+  }
+
+  #next-step-btn {
+    width: 100%;
+    padding: 12px;
+    font-size: 16px;
+    border-radius: 14px;
+  }
+
+  /* ===== MUSIC GRID ===== */
+  #music-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+  }
+}
+<script>
+let touchStartX = 0;
+let touchStartY = 0;
+
+document.addEventListener("touchstart", e => {
+  touchStartX = e.changedTouches[0].screenX;
+  touchStartY = e.changedTouches[0].screenY;
+});
+
+document.addEventListener("touchend", e => {
+  const touchEndX = e.changedTouches[0].screenX;
+  const touchEndY = e.changedTouches[0].screenY;
+
+  handleSwipe(touchEndX - touchStartX, touchEndY - touchStartY);
+});
+
+const categories = ["braids","ponytails","buns","curly","short","long"];
+let currentCatIndex = 0;
+
+function handleSwipe(dx, dy) {
+  if (Math.abs(dx) > Math.abs(dy)) {
+    // Horizontal swipe
+    if (dx > 60) swipeRight();
+    if (dx < -60) swipeLeft();
+  } else {
+    // Vertical swipe
+    if (dy < -60) hideInfo();
+    if (dy > 60) showInfo();
+  }
+}
+
+function swipeLeft() {
+  currentCatIndex = (currentCatIndex + 1) % categories.length;
+  loadCategory(categories[currentCatIndex]);
+}
+
+function swipeRight() {
+  currentCatIndex =
+    (currentCatIndex - 1 + categories.length) % categories.length;
+  loadCategory(categories[currentCatIndex]);
+}
+
+function hideInfo() {
+  const panel = document.getElementById("info-panel");
+  panel.style.display = "none";
+}
+
+function showInfo() {
+  const panel = document.getElementById("info-panel");
+  panel.style.display = "block";
+}
+</script>
+<script>
+let swipeUsed = false;
+
+function removeHints() {
+  if (!swipeUsed) {
+    swipeUsed = true;
+    const hints = document.querySelector(".swipe-hints");
+    if (hints) hints.style.display = "none";
+
+    const panel = document.getElementById("info-panel");
+    if (panel) panel.classList.add("hint-used");
+  }
+}
+
+// Call this inside handleSwipe()
+function handleSwipe(dx, dy) {
+  removeHints();
+
+  if (Math.abs(dx) > Math.abs(dy)) {
+    if (dx > 60) swipeRight();
+    if (dx < -60) swipeLeft();
+  } else {
+    if (dy < -60) hideInfo();
+    if (dy > 60) showInfo();
+  }
+}
+</script>

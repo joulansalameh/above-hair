@@ -1,0 +1,604 @@
+/* ===== BODY ===== */
+body {
+  margin: 0;
+  font-family: "Segoe UI", sans-serif;
+  background: linear-gradient(135deg, #2b244a, #4b3f72);
+  color: white;
+  min-height: 100vh;
+  overflow-y: auto; /* allow scrolling */
+  padding: 20px;
+}
+
+/* ===== APP GRID ===== */
+#app {
+  display: grid;
+  grid-template-columns: 260px 1fr 360px;
+  gap: 12px;
+  padding: 10px;
+  min-height: 100vh; /* ensures full height but allows content to grow */
+}
+
+/* ===== SIDEBAR ===== */
+#sidebar {
+  background: rgba(255, 240, 250, 0.9);
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  border-radius: 20px;
+  box-shadow: 0 4px 12px rgba(255,182,193,0.5);
+}
+
+#sidebar h2 {
+  font-size: 26px;
+  color: #ff1493;
+}
+
+.sidebar-btn {
+  padding: 14px;
+  font-size: 20px;
+  border-radius: 16px;
+  cursor: pointer;
+  background: #ffc0cb;
+  color: white;
+  font-weight: bold;
+  text-align: center;
+  transition: 0.3s;
+  position: relative;
+  overflow: hidden;
+}
+
+.sidebar-btn::after {
+  content: "✨";
+  position: absolute;
+  top: -10px;
+  left: -10px;
+  font-size: 16px;
+  opacity: 0.6;
+  animation: sparkle 2s linear infinite;
+}
+
+.sidebar-btn:hover {
+  background: #ff85c1;
+  transform: scale(1.05) rotate(-2deg);
+}
+
+@keyframes sparkle {
+  0% { transform: translate(0,0) rotate(0deg); opacity:0; }
+  50% { transform: translate(5px,5px) rotate(180deg); opacity:1; }
+  100% { transform: translate(0,0) rotate(360deg); opacity:0.6; }
+}
+
+/* ===== CENTER CONTENT ===== */
+#content {
+  position: relative;
+  padding: 20px;
+  overflow-y: auto;
+  z-index: 1;
+}
+
+/* ===== FLOATING PARTICLES ===== */
+#particles {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+  z-index: 0;
+}
+
+.particle {
+  position: absolute;
+  width: 12px;
+  height: 12px;
+  background: transparent;
+  animation: float 6s linear infinite;
+}
+
+.particle.bow::before {
+  content: "🎀";
+  font-size: 16px;
+}
+
+@keyframes float {
+  0% { transform: translateY(110vh) rotate(0deg); opacity:0; }
+  50% { opacity:1; }
+  100% { transform: translateY(-10vh) rotate(360deg); opacity:0; }
+}
+
+/* ===== HAIRSTYLES GRID ===== */
+#hairstyles-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  justify-content: center;
+}
+
+.hairstyle-card {
+  width: 180px;
+  height: 260px;
+  background-color: #ffe6f9;
+  border: 2px solid #c77fcf;
+  border-radius: 15px;
+  padding: 10px;
+  box-sizing: border-box;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  transition: transform 0.2s, box-shadow 0.2s, background-color 0.2s;
+}
+
+/* ===== INFO PANEL ===== */
+#info-panel {
+  background: #ffe6f0;
+  padding: 24px;
+  border-radius: 32px;
+  border: 4px solid #ff99cc;
+  box-shadow: 0 8px 16px rgba(255,182,193,0.5);
+  font-family: 'Comic Sans MS', cursive, sans-serif;
+  position: relative;
+}
+
+.kitty-face {
+  font-size: 32px;
+  margin-right: 10px;
+  vertical-align: middle;
+}
+
+.kitty-bow {
+  font-size: 24px;
+  margin-left: 6px;
+  vertical-align: middle;
+}
+
+#info-panel .section-title {
+  font-size: 22px;
+  margin-top: 20px;
+  color: #ff3399;
+  position: relative;
+  padding-left: 28px;
+}
+
+#info-panel .section-title::before {
+  content: "🎀";
+  position: absolute;
+  left: 0;
+  top: 0;
+  font-size: 22px;
+}
+
+#info-panel .section-text {
+  font-size: 18px;
+  line-height: 1.6;
+  white-space: pre-line;
+  color: #ff0066;
+  background-color: #fff0f5;
+  padding: 16px;
+  border-radius: 20px;
+  margin-bottom: 16px;
+  border: 2px dashed #ff99cc;
+  box-shadow: 0 4px 8px rgba(255,182,193,0.3);
+}
+
+/* ===== NEXT STEP BUTTON ===== */
+#next-step-btn {
+  margin-top: 10px;
+  padding: 10px 16px;
+  border-radius: 32px;
+  border: 2px solid #ff66aa;
+  cursor: pointer;
+  background: linear-gradient(135deg, #ffb3d9, #ff66aa);
+  color: white;
+  font-weight: 700;
+  font-family: 'Comic Sans MS', cursive, sans-serif;
+  box-shadow: 0 4px 10px rgba(255,182,193,0.5);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+#next-step-btn:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 14px rgba(255,182,193,0.6);
+}
+/* =========================
+   MOBILE RESPONSIVE DESIGN
+   ========================= */
+@media (max-width: 900px) {
+
+  /* App layout becomes vertical */
+  #app {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto 1fr auto;
+    height: 100vh;
+  }
+
+  /* Sidebar moves to top */
+  #sidebar {
+    flex-direction: row;
+    overflow-x: auto;
+    gap: 10px;
+    padding: 10px;
+  }
+
+  #sidebar h2 {
+    display: none; /* hide titles on mobile */
+  }
+
+  .sidebar-btn {
+    font-size: 16px;
+    padding: 10px 14px;
+    white-space: nowrap;
+  }
+
+  /* Content takes full width */
+  #content {
+    padding: 12px;
+  }
+
+  /* Grid becomes bigger touch targets */
+  #hairstyles {
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 12px;
+  }
+
+  .hairstyle img {
+    height: 140px;
+  }
+
+  /* Info panel moves to bottom */
+  #info-panel {
+    order: 3;
+    max-height: 40vh;
+    font-size: 16px;
+  }
+
+  #info-title {
+    font-size: 22px;
+  }
+
+  .section-title {
+    font-size: 18px;
+  }
+
+  .section-text {
+    font-size: 15px;
+  }
+
+  #next-step-btn {
+    width: 100%;
+    font-size: 16px;
+  }
+
+  /* Music grid mobile */
+  #music-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+* {
+  -webkit-tap-highlight-color: transparent;
+}
+/* =========================
+   MOBILE-NATIVE EXPERIENCE
+   ========================= */
+@media (max-width: 768px) {
+
+  body {
+    overflow-y: auto;
+  }
+
+  /* Hide desktop sidebar */
+  #sidebar {
+    display: none;
+  }
+
+  #app {
+    grid-template-columns: 1fr;
+    height: auto;
+  }
+
+  /* Content gets full screen */
+  #content {
+    padding: 14px;
+    padding-bottom: 90px; /* space for bottom nav */
+  }
+
+  /* Bigger cards, fewer columns */
+  #hairstyles {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 14px;
+  }
+
+  .hairstyle img {
+    height: 180px;
+  }
+
+  /* Info panel becomes inline card */
+  #info-panel {
+    position: relative;
+    margin: 14px;
+    border-radius: 24px;
+  }
+
+  /* ===== BOTTOM NAV ===== */
+  #mobile-nav {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 70px;
+    background: rgba(20,20,30,0.95);
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    border-top: 1px solid rgba(255,255,255,0.1);
+    z-index: 999;
+  }
+
+  .mobile-btn {
+    font-size: 14px;
+    padding: 12px 14px;
+    border-radius: 18px;
+    background: rgba(255,255,255,0.12);
+    min-width: 60px;
+    text-align: center;
+    cursor: pointer;
+  }
+
+  .mobile-btn:active {
+    transform: scale(0.95);
+  }
+}
+/* =========================
+   MOBILE OPTIMIZED LAYOUT
+   ========================= */
+@media (max-width: 768px) {
+
+  body {
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden;
+  }
+
+  /* MAIN LAYOUT STACK */
+  #container {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+  }
+
+  /* INFO PANEL → TOP */
+  #info-panel {
+    order: 1;
+    width: 100%;
+    max-height: 30vh;
+    overflow-y: auto;
+    padding: 14px;
+    font-size: 15px;
+    border-bottom: 1px solid #ddd;
+  }
+
+  #info-panel h2 {
+    font-size: 18px;
+  }
+
+  /* MAIN CONTENT → CENTER */
+  #main {
+    order: 2;
+    flex: 1;
+    padding: 12px;
+    overflow-y: auto;
+  }
+
+  #hairstyles {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+  }
+
+  .hair-card {
+    font-size: 14px;
+    padding: 10px;
+    border-radius: 14px;
+  }
+
+  .hair-card img {
+    width: 100%;
+    border-radius: 12px;
+  }
+
+  /* SIDEBAR → BOTTOM MENU */
+  #sidebar {
+    order: 3;
+    width: 100%;
+    height: 70px;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    align-items: center;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    background: #111;
+    border-top: 1px solid #333;
+    z-index: 999;
+  }
+
+  #sidebar h2 {
+    display: none; /* remove titles on mobile */
+  }
+
+  .sidebar-btn {
+    font-size: 12px;
+    padding: 6px;
+    flex: 1;
+    text-align: center;
+    border-radius: 0;
+  }
+
+  .sidebar-btn::before {
+    display: block;
+    font-size: 18px;
+  }
+
+}
+@media (max-width: 768px) {
+  .sidebar-btn {
+    transition: background 0.2s ease, transform 0.1s ease;
+  }
+
+  .sidebar-btn:active {
+    transform: scale(0.95);
+    background: rgba(255,255,255,0.1);
+  }
+
+  .hair-card {
+    transition: transform 0.15s ease;
+  }
+
+  .hair-card:active {
+    transform: scale(0.97);
+  }
+}
+@media (max-width: 768px) {
+
+  #sidebar {
+    height: 72px;
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+
+  .sidebar-btn {
+    display: flex;
+    flex-direction: column;
+    font-size: 20px;
+    line-height: 1;
+  }
+
+  .sidebar-btn span {
+    font-size: 11px;
+    margin-top: 4px;
+    opacity: 0.85;
+  }
+}
+@media (max-width: 768px) {
+  #info-panel {
+    transition: transform 0.3s ease;
+  }
+
+  .hair-card {
+    touch-action: manipulation;
+  }
+}
+@media (max-width: 768px) {
+  .swipe-handle {
+    width: 40px;
+    height: 5px;
+    background: #bbb;
+    border-radius: 10px;
+    margin: 6px auto 10px;
+    opacity: 0.8;
+  }
+}
+@media (max-width: 768px) {
+  .swipe-hints {
+    position: fixed;
+    top: 55%;
+    left: 0;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    pointer-events: none;
+    padding: 0 12px;
+    z-index: 20;
+    opacity: 0.5;
+    animation: hintFade 3s ease-in-out infinite;
+  }
+
+  .swipe-hints span {
+    font-size: 22px;
+  }
+
+  @keyframes hintFade {
+    0%, 100% { opacity: 0.2; }
+    50% { opacity: 0.6; }
+  }
+}
+@media (max-width: 768px) {
+  #info-panel {
+    box-shadow: 0 6px 16px rgba(0,0,0,0.2);
+    border-bottom-left-radius: 16px;
+    border-bottom-right-radius: 16px;
+  }
+
+  #info-panel::after {
+    content: "Swipe up to hide ⬆️";
+    display: block;
+    text-align: center;
+    font-size: 12px;
+    opacity: 0.6;
+    margin-top: 6px;
+  }
+}
+@media (max-width: 768px) {
+  .swipe-handle {
+    animation: handleBounce 1.8s infinite;
+  }
+
+  @keyframes handleBounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(4px); }
+  }
+}
+@media (max-width: 768px) {
+  #floating-bubbles {
+    position: fixed;
+    bottom: 80px; /* above bottom nav */
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 10px;
+    z-index: 999;
+  }
+
+  .bubble {
+    width: 12px;
+    height: 12px;
+    background: rgba(255,255,255,0.8);
+    border-radius: 50%;
+    opacity: 0.6;
+    animation: floatBubble 2s ease-in-out infinite alternate;
+  }
+
+  .bubble:nth-child(2) { animation-delay: 0.2s; }
+  .bubble:nth-child(3) { animation-delay: 0.4s; }
+  .bubble:nth-child(4) { animation-delay: 0.6s; }
+
+  @keyframes floatBubble {
+    0% { transform: translateY(0); opacity: 0.6; }
+    50% { transform: translateY(-8px); opacity: 1; }
+    100% { transform: translateY(0); opacity: 0.6; }
+  }
+}
+@media (max-width: 768px) {
+  #swipe-indicator {
+    position: fixed;
+    bottom: 100px; /* just above bottom nav */
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 6px;
+    z-index: 1000;
+    pointer-events: none;
+    opacity: 0.7;
+    transition: opacity 0.5s ease;
+  }
+
+  #swipe-indicator .bar {
+    width: 20px;
+    height: 3px;
+    background: rgba(255, 255, 255, 0.5);
+    border-radius: 3px;
+  }
+
+  #swipe-indicator .bar.active {
+    background: white;
+  }
+}
